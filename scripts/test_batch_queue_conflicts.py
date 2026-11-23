@@ -270,6 +270,20 @@ class DeletedImports(unittest.TestCase):
         for commit, path in ((theirs, "Moved2.lean"), (self.fork, "Long.lean")):
             self.assertIn(self.repo.git("rev-parse", f"{commit}:src/{path}").encode(), asked[0])
 
+    def test_edit_of_a_copy_competes_with_an_exact_rename_outside_src(self):
+        def change(root):
+            old = root / "src" / "User.lean"
+            source = old.read_bytes()
+            old.rename(root / "Archived.lean")
+            (root / "src" / "New.lean").write_bytes(source + b"-- copy\n")
+
+        theirs = self.branch("copy-and-rename", change)
+        tree = self.repo.git("merge-tree", "--write-tree", self.ours, theirs)
+        self.assertNotIn(self.GONE.decode(), self.repo.git("-c", "core.quotePath=false", "ls-tree",
+                                                           "-r", "--name-only", tree).splitlines())
+        self.assertIn("import Sub₂.Gone", self.repo.git("show", f"{tree}:src/New.lean").splitlines())
+        self.assertEqual(self.check(theirs).stale, [("ours", self.GONE, self.NEW)])
+
     def test_import_of_a_file_that_stays_is_not_reported(self):
         result = self.check(self.branch("fine", self.write("New.lean", "import Kept\n")))
         self.assertEqual((result.stale, result.unread), ([], False))
