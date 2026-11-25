@@ -1,5 +1,6 @@
 module
 
+import Development.AbelianVarietyTheory.Proofs.DivisorProofs.SeparatesOnSmoothOfPair
 public import Development.AbelianVarietyTheory.Definitions.Divisors.IsoOverOfIsOpenImmersion
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsBijectiveStalkMapOverDvrPoint
 public import Development.AbelianVarietyTheory.BlockTheory.TorsionBlocks.LevelCarrying
@@ -1130,7 +1131,7 @@ end -- clump:auto
 -- ===== end clump member: Development.AbelianVarietyTheory.Proofs.DivisorProofs.SectionsAdjointNefSeparateEtaleFibre =====
 
 -- ===== clump member: Development.AbelianVarietyTheory.Proofs.DivisorProofs.SectionsSeparateQuotientGenericFibreDescends =====
--- clump-header: {"m": "Development.AbelianVarietyTheory.Proofs.DivisorProofs.SectionsSeparateQuotientGenericFibreDescends", "h": "module\n\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.CuspIso\npublic import Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.ExistsAlgClosedBaseChange\npublic import Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.GeometricallyConnectedOfIsIsoRestrict\npublic import Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.IsLogCanonicalMultipleCanonical\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.AmpleModuloEffectiveAwayFromPointPullAffine\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.BaseChangeSectionsFiniteSpan\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.BaseChangeSmoothProjectiveVarietyProperties\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.IsoOverOfIsOpenImmersion\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsPushSectionsCanonicalModification\npublic import Development.AbelianVarietyTheory.BlockTheory.TorsionBlocks.LevelCarrying\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.IsCoprimeOfNatCast\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.IsHomogeneousCompIdeal\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.MemLevEigenIffTransl\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.UnitaryWeightExponentVectorSignatureWeightMuZero\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsResolvedModification\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.FiniteAffineNeighbourhoodExists\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.GeometricallyConnectedStr\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.LineBundleGlobalSectionsDimCongrPicardClass\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.GlobalSectionsDimPullbackLeGenericallyFinite\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsBigLineBundleOfSmulClassEqAmpleAtAddNef\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsBigPull\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsNefLineBundleBaseChangeFieldExtension\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsNefLineBundleOfPullbackSurjectiveProjective\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.LineBundleGlobalSectionsDimNefPowTensorAmpleIsBi\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.OneLeIntersectionNumberSubvarietyThroughPositive\npublic import ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.IsCompletedStrictHens\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ResidueDegreeGenericNeZeroEquidimensional\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.CommGroupMulMulEqMulInvMulMulMul\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.SectionsAdjointNefSeparateEtaleFibre\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.EventuallySubsingletonCohTwistZOfIsProjOver\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.HigherDirectImagesVanishOfIsAffineHom\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.IsFiniteLengthOfIsArtinianRingAnnihilator\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.RingKrullDimQuotientEqOfMemMinimalPrimes\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.SumNegOnePowFinrankEqZero\nimport Development.AbelianVarietyTheory.Proofs.CovolumeBounds.IsProjOverIffIsProperAndExistsIsAmpleLB\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.FiniteFinrankLineBundleSectionsFiniteEtale\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.KawamataViehwegVanishingNumberFieldTwist\nimport Mathlib.Algebra.Order.Floor.Extended\nimport Mathlib.Algebra.Order.Floor.Semifield\nimport Mathlib.Algebra.Order.Interval.Basic\nimport Mathlib.Analysis.Complex.UpperHalfPlane.Basic\nimport Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp\nimport Mathlib.Combinatorics.Enumerative.DyckWord\nimport Mathlib.Combinatorics.SimpleGraph.Triangle.Removal\nimport Mathlib.Data.NNRat.Floor\nimport Mathlib.Geometry.Euclidean.Volume.Basic\nimport Mathlib.NumberTheory.Chebyshev\nimport Mathlib.NumberTheory.Height.NumberField\nimport Mathlib.NumberTheory.Height.Projectivization\nimport Mathlib.NumberTheory.LucasLehmer\nimport Mathlib.NumberTheory.SelbergSieve\nimport Mathlib.RingTheory.Radical.NatInt\nimport Mathlib.Tactic.Echelon.Zsqrtd\nimport Mathlib.Tactic.Inclusion.Extension.Core.Core\nimport Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit\nimport Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp\nimport Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses\nimport Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic\nimport Mathlib.Tactic.Inclusion.Extension.IntervalInt.Hypotheses\nimport Mathlib.Tactic.Linter.Style\nimport Mathlib.Tactic.NormNum.Irrational\nimport Mathlib.Tactic.NormNum.IsCoprime\nimport Mathlib.Tactic.NormNum.IsSquare\nimport Mathlib.Tactic.NormNum.LegendreSymbol\nimport Mathlib.Tactic.NormNum.ModEq\nimport Mathlib.Tactic.NormNum.NatFib\nimport Mathlib.Tactic.NormNum.NatLog\nimport Mathlib.Tactic.NormNum.NatSqrt\nimport Mathlib.Tactic.NormNum.Ordinal\nimport Mathlib.Tactic.NormNum.Parity\nimport Mathlib.Tactic.NormNum.Prime\nimport Mathlib.Tactic.NormNum.RealSqrt\nimport Mathlib.Tactic.Polynomial.Basic\nimport Std.Tactic.BVDecide.Normalize.Prop\nimport Development.AbelianVarietyTheory.Definitions.Divisors.NormNegCmConstantEqAtAllEmbeddings\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.GapGeSubKapBase\n\n"}
+-- clump-header: {"m": "Development.AbelianVarietyTheory.Proofs.DivisorProofs.SectionsSeparateQuotientGenericFibreDescends", "h": "module\n\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.SeparatesOnSmoothOfPair\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.CuspIso\npublic import Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.ExistsAlgClosedBaseChange\npublic import Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.GeometricallyConnectedOfIsIsoRestrict\npublic import Development.AbelianVarietyTheory.PublishedTheorems.Divisors₂.IsLogCanonicalMultipleCanonical\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.AmpleModuloEffectiveAwayFromPointPullAffine\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.BaseChangeSectionsFiniteSpan\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.BaseChangeSmoothProjectiveVarietyProperties\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.IsoOverOfIsOpenImmersion\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsPushSectionsCanonicalModification\npublic import Development.AbelianVarietyTheory.BlockTheory.TorsionBlocks.LevelCarrying\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.IsCoprimeOfNatCast\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.IsHomogeneousCompIdeal\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.MemLevEigenIffTransl\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.UnitaryWeightExponentVectorSignatureWeightMuZero\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsResolvedModification\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.FiniteAffineNeighbourhoodExists\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.GeometricallyConnectedStr\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.LineBundleGlobalSectionsDimCongrPicardClass\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.GlobalSectionsDimPullbackLeGenericallyFinite\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsBigLineBundleOfSmulClassEqAmpleAtAddNef\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsBigPull\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsNefLineBundleBaseChangeFieldExtension\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsNefLineBundleOfPullbackSurjectiveProjective\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.LineBundleGlobalSectionsDimNefPowTensorAmpleIsBi\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.OneLeIntersectionNumberSubvarietyThroughPositive\npublic import ReciprocityTheory.ReductiveGroups.ArithmeticGeometry.BirationalGeometry.ToroidalCompactification.IsCompletedStrictHens\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ResidueDegreeGenericNeZeroEquidimensional\npublic import Development.AbelianVarietyTheory.Definitions.Divisors.CommGroupMulMulEqMulInvMulMulMul\npublic import Development.AbelianVarietyTheory.Proofs.DivisorProofs.SectionsAdjointNefSeparateEtaleFibre\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.EventuallySubsingletonCohTwistZOfIsProjOver\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.HigherDirectImagesVanishOfIsAffineHom\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.IsFiniteLengthOfIsArtinianRingAnnihilator\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.RingKrullDimQuotientEqOfMemMinimalPrimes\nimport Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.SumNegOnePowFinrankEqZero\nimport Development.AbelianVarietyTheory.Proofs.CovolumeBounds.IsProjOverIffIsProperAndExistsIsAmpleLB\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.FiniteFinrankLineBundleSectionsFiniteEtale\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.KawamataViehwegVanishingNumberFieldTwist\nimport Mathlib.Algebra.Order.Floor.Extended\nimport Mathlib.Algebra.Order.Floor.Semifield\nimport Mathlib.Algebra.Order.Interval.Basic\nimport Mathlib.Analysis.Complex.UpperHalfPlane.Basic\nimport Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp\nimport Mathlib.Combinatorics.Enumerative.DyckWord\nimport Mathlib.Combinatorics.SimpleGraph.Triangle.Removal\nimport Mathlib.Data.NNRat.Floor\nimport Mathlib.Geometry.Euclidean.Volume.Basic\nimport Mathlib.NumberTheory.Chebyshev\nimport Mathlib.NumberTheory.Height.NumberField\nimport Mathlib.NumberTheory.Height.Projectivization\nimport Mathlib.NumberTheory.LucasLehmer\nimport Mathlib.NumberTheory.SelbergSieve\nimport Mathlib.RingTheory.Radical.NatInt\nimport Mathlib.Tactic.Echelon.Zsqrtd\nimport Mathlib.Tactic.Inclusion.Extension.Core.Core\nimport Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit\nimport Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp\nimport Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses\nimport Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic\nimport Mathlib.Tactic.Inclusion.Extension.IntervalInt.Hypotheses\nimport Mathlib.Tactic.Linter.Style\nimport Mathlib.Tactic.NormNum.Irrational\nimport Mathlib.Tactic.NormNum.IsCoprime\nimport Mathlib.Tactic.NormNum.IsSquare\nimport Mathlib.Tactic.NormNum.LegendreSymbol\nimport Mathlib.Tactic.NormNum.ModEq\nimport Mathlib.Tactic.NormNum.NatFib\nimport Mathlib.Tactic.NormNum.NatLog\nimport Mathlib.Tactic.NormNum.NatSqrt\nimport Mathlib.Tactic.NormNum.Ordinal\nimport Mathlib.Tactic.NormNum.Parity\nimport Mathlib.Tactic.NormNum.Prime\nimport Mathlib.Tactic.NormNum.RealSqrt\nimport Mathlib.Tactic.Polynomial.Basic\nimport Std.Tactic.BVDecide.Normalize.Prop\nimport Development.AbelianVarietyTheory.Definitions.Divisors.NormNegCmConstantEqAtAllEmbeddings\nimport Development.AbelianVarietyTheory.Proofs.DivisorProofs.GapGeSubKapBase\n\n"}
 section -- clump:auto
 @[expose] public section
 
@@ -1190,16 +1191,6 @@ theorem globalSections_dim_le_div_add_restriction [IsIntegral X] (hp : IsProjOve
   exact hdim_pushforward k (appTop_algebraMap_along k _) _ 0
 
 end Cut
-
-theorem nef_pull (hN : GlobalTheory.Published.NefNumerics) {F E : Type} [Field F] [Field E] {X Y : Scheme.{0}} (pX : X ⟶ Sp F)
-    (pY : Y ⟶ Sp E) (g : Y ⟶ X) (hX : IsProjOver pX) (hY : IsProjOver pY) (L : LB X)
-    (hL : letI := algebraΓOfHom pX; IsNef F L) : letI := algebraΓOfHom pY; IsNef E (L.pull g) := by
-  letI := algebraΓOfHom pX
-  letI := algebraΓOfHom pY
-  obtain ⟨hpp, A, hA⟩ := (isProjOver_iff_isProper_and_exists_isAmpleLB pX).1 hX
-  obtain ⟨B, hB⟩ := exists_isAmpleLB_of_isProjOver hY
-  have : IsProper (strHom F (X := X)) := by rw [strHom_eq (f := pX) fun _ => rfl]; exact hpp
-  exact NefFieldExt.isNef_pull hN hL hA hB g
 
 theorem big_pull_modif {F : Type} [Field F] {X : Scheme.{0}} [IsIntegral X] (sX : X ⟶ Sp F) (n : ℕ)
     [SmoothOfRelativeDimension n sX] (U : X.Opens) (M : Modif sX U n) (hU : (U : Set X).Nonempty) [IsIntegral M.X]
@@ -1294,94 +1285,6 @@ theorem exists_etale_restrict {F : Type} [Field F] [CharZero F] {M W : Scheme.{0
   have key : ∀ V : W.Opens, V = U → (f.app V).hom.Etale := fun V e => e ▸ hE
   exact (RingHom.Etale.respectsIso.cancel_right_isIso _ _).2 (key _ U.ι_image_top)
 
-section Descent
-
-open GlobalTheory.Vanishing.H0 GlobalTheory.TangentOrigin GlobalTheory.Adelic
-open ReciprocityTheory.ChartRestriction.G.DVR.FlatBC (algX)
-
-theorem sum_val_pull_eq_zero {F : Type} [Field F] [Algebra F ℂ] {Y : Scheme.{0}} (p : Y ⟶ Sp F) (n : ℕ)
-    [SmoothOfRelativeDimension n p] (hp : IsProjOver p) (hc : GeometricallyConnected p) (hn : 1 ≤ n) {T : LB Y}
-    (hT : T.IsLB) {J : Type} [Fintype J] (x : J → (Sp ℂ ⟶ pullback p (spMap (algebraMap F ℂ))))
-    (hx : ∀ j, x j ≫ pullback.snd _ _ = 𝟙 _) (k : J → T.ι)
-    (hk : ∀ j, ⊤ ≤ (x j ≫ pullback.fst _ _) ⁻¹ᵁ T.U (k j))
-    (hk' : ∀ j, ⊤ ≤ x j ⁻¹ᵁ (T.pull (pullback.fst _ _)).U (pIdx T _ (k j))) (a : J → ℂ)
-    (h : ∀ g : H0 p T ⊤, ∑ j, a j * val (x j ≫ pullback.fst _ _) (k j) le_top (hk j) g = 0)
-    (g : H0 (pullback.snd p (spMap (algebraMap F ℂ))) (T.pull (pullback.fst _ _)) ⊤) :
-    ∑ j, a j * val (x j) (pIdx T _ (k j)) le_top (hk' j) g = 0 := by
-  let Z : Scheme.{0} := pullback p (spMap (algebraMap F ℂ))
-  let π : Z ⟶ Y := pullback.fst p (spMap (algebraMap F ℂ))
-  let q : Z ⟶ Sp ℂ := pullback.snd p (spMap (algebraMap F ℂ))
-  let S : LinSys F := ⟨Y, p, n, T, hT, 0, Fin.elim0⟩
-  letI := algebraΓOfHom q
-  obtain ⟨N, b, hb⟩ : ∃ (N : ℕ) (b : Fin N → T.Sec), ∀ t : (T.pull π).Sec, ∃ u : Fin N → ℂ,
-      ∑ i, algebraMap ℂ Γ(Z, ⊤) (u i) • secPull (b i) π = t :=
-    SectionsFieldChange.exists_pullSecs_spanning F ℂ S ⟨inferInstance, hp, hc, hn⟩
-  obtain ⟨t, rfl⟩ := (bijective_ofSec_top (p := q) (B := T.pull π)).2 g
-  obtain ⟨u, hu⟩ := hb t
-  have e (c : ℂ) : algebraMap ℂ Γ(Z, ⊤) c = algX q ⊤ c := by
-    change q.appTop _ = _
-    rw [Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE]
-    rfl
-  have ht : t = ∑ i, algX q ⊤ (u i) • secPull (b i) π := by
-    rw [← hu]
-    exact Finset.sum_congr rfl fun i _ => by rw [e]
-  have hx' : ∀ j, x j ≫ q = spMap (RingHom.id ℂ) := fun j =>
-    (hx j).trans (Spec.map_id (CommRingCat.of ℂ)).symm
-  have hv : ∀ j i, val (x j) (pIdx T π (k j)) le_top (hk' j) (ofSec q ⊤ (secPull (b i) π)) =
-      val (x j ≫ π) (k j) le_top (hk j) (ofSec p ⊤ (b i)) := fun j i => by
-    refine (val_ofSec (p := q) (O := ⊤) (x j) _ le_top (hk' j) _).trans
-      (Eq.trans ?_ (val_ofSec (p := p) (O := ⊤) (x j ≫ π) _ le_top (hk j) _).symm)
-    exact congrArg (fun g => (g ≫ (Scheme.ΓSpecIso (CommRingCat.of ℂ)).hom).hom ((b i).f (k j)))
-      (Scheme.Hom.appLE_comp_appLE (x j) π (T.U (k j)) _ ⊤ ((chartPullPull T π).le (pIdx T π (k j))) (hk' j))
-  have hs : ∀ j, val (x j) (pIdx T π (k j)) le_top (hk' j) (ofSec q ⊤ t) =
-      ∑ i, u i * val (x j ≫ π) (k j) le_top (hk j) (ofSec p ⊤ (b i)) := fun j => by
-
-    rw [ht, map_sum, map_sum]
-    refine Finset.sum_congr rfl fun i _ => ?_
-    rw [ofSec_smul]
-    exact (H0.val_smul (O := ⊤) (x j) (hx' j) _ le_top (hk' j) _ _).trans (congrArg (u i * ·) (hv j i))
-  calc _ = ∑ j, ∑ i, u i * (a j * val (x j ≫ π) (k j) le_top (hk j) (ofSec p ⊤ (b i))) :=
-        Finset.sum_congr rfl fun j _ => by
-          rw [hs j, Finset.mul_sum]
-          exact Finset.sum_congr rfl fun i _ => by ring
-    _ = 0 := by
-        rw [Finset.sum_comm]
-        exact Finset.sum_eq_zero fun i _ => by rw [← Finset.mul_sum, h, mul_zero]
-
-abbrev tensPullChart {X Y : Scheme.{0}} {K B : LB Y} (π : X ⟶ Y) (hK : K.IsLB) (hB : B.IsLB) :
-    ProdChart (LB.triv X) (tens (K.pull π) (B.pull π)) ((tens K B).pull π) where
-  isLB₁ := LB.isLB_triv X
-  isLB₂ := isLB_tens (LB.isLB_pull hK π) (LB.isLB_pull hB π)
-  isLB₃ := LB.isLB_pull (isLB_tens hK hB) π
-  τ := K.ι × B.ι
-  a _ := PUnit.unit
-  b t := (pIdx K π t.1, pIdx B π t.2)
-  c t := pIdx (tens K B) π t
-  cover x := by
-    obtain ⟨j, hj⟩ := exists_chart hK (π x)
-    obtain ⟨l, hl⟩ := exists_chart hB (π x)
-    exact ⟨(j, l), trivial, ⟨mem_pIdx.2 hj, mem_pIdx.2 hl⟩, mem_pIdx.2 ⟨hj, hl⟩⟩
-  rule x t t' e e' := by
-    have h1 : tr (LB.triv X) x PUnit.unit PUnit.unit = 1 := map_one _
-    rw [h1, one_mul, tr_tens _ _ x e.2.1 e'.2.1, tr_pull _ π x e.2.2 e'.2.2, tr_pull _ π x e.2.1.1 e'.2.1.1,
-      tr_pull _ π x e.2.1.2 e'.2.1.2, tr_tens _ _ (π x) (mem_pull.1 e.2.2) (mem_pull.1 e'.2.2), map_mul]
-    rfl
-
-theorem exists_val_eq_tens_pull {k : Type} [CommRing k] {X Y : Scheme.{0}} (q : X ⟶ Sp k) {K B : LB Y} (π : X ⟶ Y)
-    (hK : K.IsLB) (hB : B.IsLB) (g : H0 q (tens (K.pull π) (B.pull π)) ⊤) :
-    ∃ g' : H0 q ((tens K B).pull π) ⊤, ∀ (x : Sp ℂ ⟶ X) (t : (tens K B).ι)
-      (h : ⊤ ≤ x ⁻¹ᵁ (tens (K.pull π) (B.pull π)).U (pIdx K π t.1, pIdx B π t.2))
-      (h' : ⊤ ≤ x ⁻¹ᵁ ((tens K B).pull π).U (pIdx (tens K B) π t)),
-      val x (pIdx (tens K B) π t) le_top h' g' = val x (pIdx K π t.1, pIdx B π t.2) le_top h g := by
-  let one : (LB.triv X).Sec := ⟨fun _ => 1, fun _ _ => by simp⟩
-  refine ⟨(tensPullChart π hK hB).mul (ofSec q ⊤ one) g, fun x t h h' => ?_⟩
-  have e := (tensPullChart π hK hB).val_mul (ofSec q ⊤ one) g t x le_top le_top h h'
-  have e₁ : val x PUnit.unit le_top le_top (ofSec q ⊤ one) = 1 :=
-    (val_ofSec (p := q) (O := ⊤) x _ le_top le_top one).trans (map_one _)
-  exact e.trans ((congrArg (· * _) e₁).trans (one_mul _))
-
-end Descent
-
 theorem etale_restrict_of_isPullback {M W M' W' : Scheme.{0}} {a : M' ⟶ M} {f' : M' ⟶ W'} {f : M ⟶ W} {b : W' ⟶ W}
     (H : IsPullback a f' f b) (U : W.Opens) (hU : Etale (f ∣_ U)) : Etale (f' ∣_ (b ⁻¹ᵁ U)) := by
   have H₁ := (isPullback_morphismRestrict f' (b ⁻¹ᵁ U)).flip.paste_horiz H
@@ -1439,7 +1342,7 @@ theorem separate_numberField (hK : GlobalTheory.Published.NadelVanishingAndNonKl
   have hNC := LB.isLB_pull hN πW
   have hAx : AmpleAt (N.pull πW) (x s₀) :=
     AmplePull.ampleAt_pull W _ πW N hN (x s₀) (by rw [hπx]; exact (hzU j₀ s₀).2)
-  have hNnC : IsNef ℂ (N.pull πW) := nef_pull hNN p pC πW hWp hWq N hNn
+  have hNnC : IsNef ℂ (N.pull πW) := TwoPoint.nef_pull hNN p pC πW hWp hWq N hNn
   have hc : 1 • cls (N.pull πW) hNC = cls (N.pull πW) hNC + cls (LB.triv _) (LB.isLB_triv _) := by
     rw [one_smul, cls_triv, add_zero]
   have hbig : IsBig ℂ (N.pull πW) :=
@@ -1466,12 +1369,12 @@ theorem separate_numberField (hK : GlobalTheory.Published.NadelVanishingAndNonKl
     fun j => hpt _ _ _ (mem_pIdx.2 (hkM j trivial))
   refine _root_.GlobalTheory.EtaleSep.sections_separate_fibre hK hNN _ _ pC fC n hWq hMq hn (CanonLB.baseChange HM' K) (N.pull πW) hNC (N'.pull πM)
     (B.pull πM) (LB.isLB_pull hN' πM) (LB.isLB_pull hB πM) m x (πW ⁻¹ᵁ U) hNnC hbig
-    (nef_pull hNN pC (fC ≫ pC) fC hWq hMq _ hNnC) hbig' (nef_pull hNN (f ≫ p) (fC ≫ pC) πM hMp hMq N' hN'n) hm hcB
+    (TwoPoint.nef_pull hNN pC (fC ≫ pC) fC hWq hMq _ hNnC) hbig' (TwoPoint.nef_pull hNN (f ≫ p) (fC ≫ pC) πM hMp hMq N' hN'n) hm hcB
     (hxp j₀) (hpt _ _ _ (show πW (x s₀) ∈ U from hπx s₀ ▸ (hzU j₀ s₀).1)) hUC
     (fun Z e hZ hxZ he hd => hpos Z e hZ (hxZ ⟨s₀, rfl⟩) he hd) J zC
     (fun j j' e => hz (by rw [← hz₁, ← hz₁ j', e])) hzx _ hk₁ a fun g => ?_
-  obtain ⟨g', hg'⟩ := exists_val_eq_tens_pull qM πM K.isLB hB g
-  have key := sum_val_pull_eq_zero (f ≫ p) n hMp hMc hn (isLB_tens K.isLB hB) zC hz₂ k hkM hk₂ a (fun g => by
+  obtain ⟨g', hg'⟩ := TwoPoint.exists_val_eq_tens_pull qM πM K.isLB hB g
+  have key := TwoPoint.sum_val_pull_eq_zero (f ≫ p) n hMp hMc hn (isLB_tens K.isLB hB) zC hz₂ k hkM hk₂ a (fun g => by
     rw [← h g]
     refine Finset.sum_congr rfl fun j _ => ?_
     have hv : ∀ {y y' : Sp ℂ ⟶ M} (_ : y = y') (hy : ⊤ ≤ y ⁻¹ᵁ (tens K.bundle B).U (k j))
@@ -1526,9 +1429,9 @@ theorem sections_separate_quotient_fibre : GlobalTheory.Published.NadelVanishing
   have hMgc : GeometricallyConnected M.str :=
     Modif.geometricallyConnected_str F X sX U n M inferInstance hgc hUd
   have hδσn : (letI := algebraΓOfHom M.str; IsNef F (δ.pull M.σ)) :=
-    nef_pull hNN sX M.str M.σ hXp M.proj δ hδn
+    TwoPoint.nef_pull hNN sX M.str M.σ hXp M.proj δ hδn
   have hN'σn : (letI := algebraΓOfHom M.str; IsNef F (N'.pull M.σ)) :=
-    nef_pull hNN sX M.str M.σ hXp M.proj N' hN'n
+    TwoPoint.nef_pull hNN sX M.str M.σ hXp M.proj N' hN'n
   have hδσb : (letI := algebraΓOfHom M.str; IsBig F (δ.pull M.σ)) := big_pull_modif sX n U M hUne δ hδb
   have hNWn : (letI := algebraΓOfHom pW; IsNef F NW) :=
     _root_.GlobalTheory.NefDescent.isNef_of_pull F M.X W' f pW M.str NW hNW (δ.pull M.σ) (LB.isLB_pull hδ M.σ) hfp hWp' M.proj hfs hcls hδσn
