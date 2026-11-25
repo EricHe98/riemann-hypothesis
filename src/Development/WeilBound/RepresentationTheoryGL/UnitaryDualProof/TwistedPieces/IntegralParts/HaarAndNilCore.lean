@@ -1,7 +1,6 @@
 module
 
 public import Development.WeilBound.RepresentationTheoryGL.UnitaryDualProof.TwistedPieces.TraceForm
-import Development.AbelianVarietyTheory.Proofs.DecoratedLatticeProofs.AddCharConductorIntegersContinuousNeOneStatement
 import Development.AbelianVarietyTheory.Proofs.DivisorProofs.IsLocallyConstantAddChar
 import Development.AbelianVarietyTheory.Proofs.FoundationProofs.ExistsBoxInvariantSnd
 import Development.AbelianVarietyTheory.Proofs.TwistedOperators.LinearChangeOfVariablesLocalFieldMatrix
@@ -232,7 +231,7 @@ private theorem fourQ (k : Type) [Field k] [ValuativeRel k] [TopologicalSpace k]
   have h : Hyp τ Z := ⟨hs, hnd, hnil⟩
   let : MeasurableSpace k := borel k; have : BorelSpace k := ⟨rfl⟩
   obtain ⟨ψ, hψ⟩ := exists_hasConductor_one (k := k)
-  have hψc : Continuous ψ := (GlobalTheory.T.addChar_conductor_integers_continuous_ne_one k ψ hψ).1
+  have hψc : Continuous ψ := hψ.continuous
   let ν : Measure k := Measure.addHaar
   have hmemSB : ∀ {f : Sp k n → ℂ}, f ∈ supportedIn (univ : Set (Sp k n)) →
       phi0 ψ ν h f ∈ supportedIn (univ : Set (Sp k n)) := fun hf =>
