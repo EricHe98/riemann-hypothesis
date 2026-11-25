@@ -529,7 +529,6 @@ namespace GlobalTheory.Mem.R3.LabProof.L0
 theorem hasLab_exists : GlobalTheory.Published.WeilRepresentationUnitaryPair → GlobalTheory.Published.DiscreteSeriesExists → GlobalTheory.Published.HarishChandraFinite → GlobalTheory.Published.CuspRapidDecay → ∀ (D : D7) (G : Type) [Group G] [Fintype G] (Pl0 I0 T : Type) (A3 : FamIn3 D.what₂.LL G Pl0 I0 (List ℕ) T D.R.m) (Ks : Type) [Field Ks] [NumberField Ks] [Algebra Ks D.what₂.LL] (R : RealDat3 D A3 Ks) (F : Face3 D A3) (cG : G0 R.Pg D.R.r ≃* G0g D.nd) (X0 : BaseLevelRowSide D) (Y : Read (A3 := A3) R.toRealDat F.lv2 X0) (Z : GlobalTheory.Mem.R3.Rw.RationalReadingWithoutCongruence R F X0 Y), Pins R F cG → Holds R F → HostHyp D → ∀ σ : D.what₂.FT, ∃ p, HasLab Y σ p := by
   intro hW hDS hHC hCD D G _ _ Pl0 I0 T A3 Ks _ _ _ R F cG X0 Y Z hPins hHolds hHost σ
   obtain ⟨c, hE, hWp⟩ := GlobalTheory.Mem.R3.LabEig.L0.eig_parts hW hDS hHC hCD D G Pl0 I0 T A3 Ks R F cG X0 Y Z hPins hHolds hHost σ
-  have hcar := GlobalTheory.Mem.R3.LabCarry.L0.carried hW hDS hHC hCD D G Pl0 I0 T A3 Ks R F cG X0 Y Z hPins hHolds hHost
   obtain ⟨b, hb⟩ := principalLevelFrame.rowRepR_occ R.θ (Y.eFT σ)
   obtain ⟨U, hU, hU0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
   obtain ⟨x, hx, hxU⟩ := hE b U hU
@@ -537,7 +536,8 @@ theorem hasLab_exists : GlobalTheory.Published.WeilRepresentationUnitaryPair →
     rintro rfl
     rw [map_zero] at hxU
     exact hU0 hxU.symm
-  obtain ⟨p, hp⟩ := hcar c b x hx0 hx (by rw [hxU]; exact hU.1)
+  obtain ⟨p, hp⟩ := GlobalTheory.Mem.R3.LabCarry.carried_of_mem_level (b := b) hCD hPins hHolds hx0 hx
+    (by rw [hxU]; exact hU.1)
   have hinjW : ∀ i, Function.Injective (R.HW i (sg0 D A3.A)).e := fun i => (hPins.char.base.models.HW i _).1
   refine ⟨p, fun i => ?_, fun k hk => ?_⟩
   · rintro _ ⟨y, hy, rfl⟩
@@ -613,7 +613,6 @@ theorem finiteTypes_of_full_heckeAlgebra_eigensystems : GlobalTheory.Published.W
   have hc : ∀ σ, HasLab Y σ (cOf σ) := fun σ => (lab σ).choose_spec
   have rat := GlobalTheory.Mem.R3.RatSpan.L0.span_jW_wp h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
   have ind := GlobalTheory.Mem.R3.IsotIndep.L0.isot_iSupIndep h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
-  have dim := GlobalTheory.Mem.R3.L0.finrank_liftLabel_eq_finrank_face3 h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
   have cnt := GlobalTheory.Mem.R3.LabCount.L0.cnt h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost cOf hc
   have lam := GlobalTheory.Mem.R3.LamLab.L0.eigenvalue_eq_of_label h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
   refine ⟨cOf, fun i c => ?_, fun i t σ ht hne => lam σ (cOf σ) i t (hc σ) ht hne, fun c => cnt c⟩
@@ -627,7 +626,8 @@ theorem finiteTypes_of_full_heckeAlgebra_eigensystems : GlobalTheory.Published.W
     rw [σ.2] at this
     exact Submodule.map_le_iff_le_comap.1 this
   refine Submodule.eq_of_le_of_finrank_eq hle ?_
-  rw [dim i c, ← cnt c, Formalism.IndefR.Cx.finrank_iSup_eq_sum _ hind]
+  rw [GlobalTheory.Mem.R3.finrank_liftLabel_eq_finrank_face3_of_holds Y hP hH i c,
+    ← cnt c, Formalism.IndefR.Cx.finrank_iSup_eq_sum _ hind]
   rw [Finset.sum_subtype (Finset.univ.filter (fun σ => cOf σ = c)) (p := fun σ => cOf σ = c) (by simp)]
   refine Finset.sum_congr rfl fun σ _ => ?_
   exact hIR ((i : ℕ) + 1) (by omega) (by omega) σ.1

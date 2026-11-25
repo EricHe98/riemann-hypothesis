@@ -106,68 +106,6 @@ theorem eig_parts : GlobalTheory.Published.WeilRepresentationUnitaryPair → Glo
 
 end GlobalTheory.Mem.R3.LabEig.L0
 
-namespace GlobalTheory.Mem.R3.LabCarry.L0
-variable {D : D7} {G : Type} [Group G] [Fintype G] {Pl0 I0 T : Type} {A3 : FamIn3 D.what₂.LL G Pl0 I0 (List ℕ) T D.R.m}
-
-theorem carried : GlobalTheory.Published.WeilRepresentationUnitaryPair → GlobalTheory.Published.DiscreteSeriesExists → GlobalTheory.Published.HarishChandraFinite → GlobalTheory.Published.CuspRapidDecay → ∀ (D : D7) (G : Type) [Group G] [Fintype G] (Pl0 I0 T : Type) (A3 : FamIn3 D.what₂.LL G Pl0 I0 (List ℕ) T D.R.m) (Ks : Type) [Field Ks] [NumberField Ks] [Algebra Ks D.what₂.LL] (R : RealDat3 D A3 Ks) (F : Face3 D A3) (cG : G0 R.Pg D.R.r ≃* G0g D.nd) (X0 : BaseLevelRowSide D) (Y : Read (A3 := A3) R.toRealDat F.lv2 X0) (Z : GlobalTheory.Mem.R3.Rw.RationalReadingWithoutCongruence R F X0 Y), Pins R F cG → Holds R F → HostHyp D → ∀ (c : Pl D.host.E → List ℤ → ℂ) (b : Bool) (x : R.HE.H), x ≠ 0 → x ∈ R.EEc c → R.HE.e x ∈ R.toRealDat.EEat (R.toRealDat.levR F.lv2 b) → ∃ p, R.Carries p c := by
-  intro hWe hDs hHC hCu D G _ _ Pl0 I0 T A3 Ks _ _ _ R F cG X0 Y Z hP hHo hHost c b x hx0 hxc hxb
-  by_contra! hno
-  obtain ⟨hcore, hSF, -, -, hEEc, -, -⟩ := GlobalTheory.CoreThree.heckeCharacterisation_places_parts_of_weak R F hP.char
-  obtain ⟨h, -, hN, -, hev, hchar⟩ := GlobalTheory.T.exists_sphericalOperators_rows_normal_eigenspaces R.toRealDat F.lv2 (hcore hHo.aux.ex)
-    (GlobalTheory.Hk3.schurAll_of_cuspRapidDecay hCu R.toRealDat) R.SF hSF
-
-  have heig : ∀ c' (y : R.HE.H), y ∈ R.EEc c' → ∀ P d, GlobalTheory.Hk3.Good R.toRealDat A3.A.μ0 P →
-      GlobalTheory.Hk3.IsLab (Yc D 0) P d → h P (Finsupp.single d 1) y = c' P (dualLab d) • y := by
-    intro c' y hy P d hG hL
-    rw [hEEc c'] at hy
-    rw [hev c' P hG (Finsupp.single d 1) y hy]
-    congr 1
-    simp [GlobalTheory.Hk3.evC, Finsupp.sum_single_index, hL]
-
-  have horth : ∀ c', R.EEc c' ≠ R.EEc c → R.EEc c' ≤ (ℂ ∙ x)ᗮ := by
-    intro c' hne y hy
-    have hex : ∃ P d, GlobalTheory.Hk3.Good R.toRealDat A3.A.μ0 P ∧ GlobalTheory.Hk3.IsLab (Yc D 0) P d ∧
-        c' P (dualLab d) ≠ c P (dualLab d) := by
-      by_contra! hall
-      apply hne
-      ext z
-      constructor
-      · intro hz
-        rw [hEEc c]
-        exact hchar c z fun P d hG hL => by rw [heig c' z hz P d hG hL, hall P d hG hL]
-      · intro hz
-        rw [hEEc c']
-        exact hchar c' z fun P d hG hL => by rw [heig c z hz P d hG hL, hall P d hG hL]
-    obtain ⟨P, d, hG, hL, hcc⟩ := hex
-    have hT : Commute (h P (Finsupp.single d 1)) (LinearMap.adjoint (h P (Finsupp.single d 1))) := by
-      rw [hN.2 P hG]
-      exact hN.1 P P hG hG _ _
-    rw [Submodule.mem_orthogonal_singleton_iff_inner_right]
-    have := inner_eq_zero_of_normal _ hT hcc (heig c' y hy P d hG hL) (heig c x hxc P d hG hL)
-    rw [← inner_conj_symm, this, map_zero]
-
-  have hpart : ∀ p, R.EEp3 p ≤ (ℂ ∙ x)ᗮ := by
-    intro p
-    unfold RealDat3.EEp3
-    refine iSup₂_le fun c' hc' => horth c' fun heq => hno p ?_
-    exact carries_of_eq R p heq hc'
-
-  have hxT : (Tw.mk (twAt D.what₂.embLL A3.A.v0) x : Tw (twAt D.what₂.embLL A3.A.v0) R.HE.H) ∈ (R.toCx3 F).EEl b := hxb
-  rw [← (hHo.prim.sumE b).2] at hxT
-  have hxS : x ∈ ⨆ p, R.EEp3 p := by
-    have h1 : (Tw.mk (twAt D.what₂.embLL A3.A.v0) x : Tw (twAt D.what₂.embLL A3.A.v0) R.HE.H) ∈
-        Tw.sub (twAt D.what₂.embLL A3.A.v0) (⨆ p, R.EEp3 p) := by
-      rw [twSub_iSup]
-      have hle : (⨆ p, (R.toCx3 F).EEp p ⊓ (R.toCx3 F).EEl b) ≤
-          ⨆ p, Tw.sub (twAt D.what₂.embLL A3.A.v0) (R.EEp3 p) := iSup_mono fun p => inf_le_left
-      exact hle hxT
-    exact h1
-  have hself : x ∈ (ℂ ∙ x)ᗮ := (iSup_le hpart) hxS
-  rw [Submodule.mem_orthogonal_singleton_iff_inner_right] at hself
-  exact hx0 (inner_self_eq_zero.1 hself)
-
-end GlobalTheory.Mem.R3.LabCarry.L0
-
 namespace GlobalTheory.Mem.R3.RatSpan.L0
 
 theorem span_jW_wp : GlobalTheory.Published.WeilRepresentationUnitaryPair → GlobalTheory.Published.DiscreteSeriesExists → GlobalTheory.Published.HarishChandraFinite → GlobalTheory.Published.CuspRapidDecay → ∀ (D : D7) (G : Type) [Group G] [Fintype G] (Pl0 I0 T : Type) (A3 : FamIn3 D.what₂.LL G Pl0 I0 (List ℕ) T D.R.m) (Ks : Type) [Field Ks] [NumberField Ks] [Algebra Ks D.what₂.LL] (R : RealDat3 D A3 Ks) (F : Face3 D A3) (cG : G0 R.Pg D.R.r ≃* G0g D.nd) (X0 : BaseLevelRowSide D) (Y : Read (A3 := A3) R.toRealDat F.lv2 X0) (Z : GlobalTheory.Mem.R3.Rw.RationalReadingWithoutCongruence R F X0 Y), Pins R F cG → Holds R F → HostHyp D → ∀ (i : Fin D.R.m) (p : A3.fam3.base3.Ix), Submodule.span ℂ ((Z.jW i) '' ((s0Of R F).Wp i p : Set (Fin ((s0Of R F).dW i) → D.what₂.LL))) = (R.Wp3 i p).comap (Y.mj.eW i) := by
@@ -283,51 +221,6 @@ theorem isot_iSupIndep : GlobalTheory.Published.WeilRepresentationUnitaryPair �
   · exact LinearEquiv.symm_apply_apply _ b
 
 end GlobalTheory.Mem.R3.IsotIndep.L0
-
-open GlobalTheory.Mem.R3.LamDim in
-
-theorem GlobalTheory.Mem.R3.L0.finrank_liftLabel_eq_finrank_face3 : GlobalTheory.Published.WeilRepresentationUnitaryPair → GlobalTheory.Published.DiscreteSeriesExists → GlobalTheory.Published.HarishChandraFinite → GlobalTheory.Published.CuspRapidDecay → ∀ (D : D7) (G : Type) [Group G] [Fintype G] (Pl0 I0 T : Type) (A3 : FamIn3 D.what₂.LL G Pl0 I0 (List ℕ) T D.R.m) (Ks : Type) [Field Ks] [NumberField Ks] [Algebra Ks D.what₂.LL] (R : RealDat3 D A3 Ks) (F : Face3 D A3) (cG : G0 R.Pg D.R.r ≃* G0g D.nd) (X0 : BaseLevelRowSide D) (Y : Read (A3 := A3) R.toRealDat F.lv2 X0) (Z : GlobalTheory.Mem.R3.Rw.RationalReadingWithoutCongruence R F X0 Y), Pins R F cG → Holds R F → HostHyp D → ∀ (i : Fin D.R.m) (p : A3.fam3.base3.Ix), Module.finrank ℂ ((R.Wp3 i p).comap (Y.mj.eW i)) = Module.finrank D.what₂.LL ((s0Of R F).Ep p) := by
-  intro _ _ _ _ D G _ _ Pl0 I0 T A3 Ks _ _ _ R F cG X0 Y Z hP hH _ i p
-  set s := twAt D.what₂.embLL A3.A.v0 with hs
-
-  have hinj : Function.Injective (Y.mj.eW i) := by
-    rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-    intro x hx
-    have h1 := Y.mj.eW_norm i x
-    rw [hx, norm_zero, zero_pow two_ne_zero] at h1
-    have hn : (0 : ℝ) < RealDat.nP F.lv2 false := RealDat.nP_pos (F := F.lv2) false
-    have h2 : ‖x‖ ^ 2 = 0 := by
-      rcases mul_eq_zero.1 h1.symm with h | h
-      · exact absurd h hn.ne'
-      · exact h
-    exact norm_eq_zero.1 (pow_eq_zero_iff two_ne_zero |>.1 h2)
-
-  have hrg : LinearMap.range (Y.mj.eW i) = R.toRealDat.WS F.lv2 false i (sg0 D A3.A) := by
-    rw [Y.mj.eW_range i, hH.aux.levelW false i (sg0 D A3.A)]
-
-  have hw : LinearMap.range ((R.toCx3 F).w0C false i) = Tw.sub s (R.toRealDat.WS F.lv2 false i (sg0 D A3.A)) := by
-    apply le_antisymm
-    · rintro _ ⟨y, rfl⟩
-      show ((Real.sqrt (RealDat.nP F.lv2 false) : ℝ) : ℂ) •
-        (show R.toRealDat.WS F.lv2 false i (sg0 D A3.A) from (R.toCx3 F).wC false i A3.fam3.base3.v0 y).1 ∈ _
-      exact Submodule.smul_mem (R.toRealDat.WS F.lv2 false i (sg0 D A3.A)) _
-        (show R.toRealDat.WS F.lv2 false i (sg0 D A3.A) from (R.toCx3 F).wC false i A3.fam3.base3.v0 y).2
-    · intro x hx
-      have hle : R.toRealDat.WS F.lv2 false i (sg0 D A3.A) ≤
-          Submodule.comap (Tw.mkL s (R.HW i (sg0 D A3.A)).H) (LinearMap.range ((R.toCx3 F).w0C false i)) := by
-        refine Submodule.span_le.2 ?_
-        rintro _ ⟨k, rfl⟩
-        exact GlobalTheory.TwParts.mk_bC_mem_range R F i k
-      exact hle hx
-  have hD := hH.prim.dimParts i p
-  have hR := complex_data_conditions_base_level_of_primitive_links hH.ok hH.sep hP.char hH.prim
-  have key := CxData.finrank_Ep (R.toCx3 F) F.cr false (hR.wf false) (hR.what₂ false).1 (hR.rowHyp false).h3
-    (hR.partsE false) p
-  have key2 : Module.finrank D.what₂.LL ((s0Of R F).Ep p) =
-      Module.finrank ℂ ((R.toCx3 F).EEp p ⊓ (R.toCx3 F).EEl false : Submodule ℂ (R.toCx3 F).EE) := key
-  rw [key2, ← hD, finrank_comap_of_inj _ hinj, hrg, hw]
-  show _ = Module.finrank ℂ (Tw.sub s (R.Wp3 i p) ⊓ Tw.sub s (R.toRealDat.WS F.lv2 false i (sg0 D A3.A)) : Submodule ℂ _)
-  rw [← twSub_inf, finrank_twSub]
 
 namespace GlobalTheory.Mem.R3.LabCount.L0
 

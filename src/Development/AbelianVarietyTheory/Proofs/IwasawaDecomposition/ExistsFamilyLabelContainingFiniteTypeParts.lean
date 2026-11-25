@@ -61,7 +61,6 @@ namespace GlobalTheory.Mem.R3.LabProof
 theorem hasLab_exists : GlobalTheory.Published.WeilRepresentationUnitaryPair → GlobalTheory.Published.DiscreteSeriesExists → GlobalTheory.Published.HarishChandraFinite → GlobalTheory.Published.CuspRapidDecay → ∀ (D : D7) (G : Type) [Group G] [Fintype G] (Pl0 I0 T : Type) (A3 : FamIn3 D.what₂.LL G Pl0 I0 (List ℕ) T D.R.m) (Ks : Type) [Field Ks] [NumberField Ks] [Algebra Ks D.what₂.LL] (R : RealDat3 D A3 Ks) (F : Face3 D A3) (cG : G0 R.Pg D.R.r ≃* G0g D.nd) (X0 : BaseLevelRowSide D) (Y : Read (A3 := A3) R.toRealDat F.lv2 X0) (Z : ReadL R F X0 Y), Pins R F cG → Holds R F → HostHyp D → ∀ σ : D.what₂.FT, ∃ p, HasLab Y σ p := by
   intro hW hDS hHC hCD D G _ _ Pl0 I0 T A3 Ks _ _ _ R F cG X0 Y Z hPins hHolds hHost σ
   obtain ⟨c, hE, hWp⟩ := _root_.GlobalTheory.Mem.R3.LabEig.eig_parts hW hDS hHC hCD D G Pl0 I0 T A3 Ks R F cG X0 Y Z hPins hHolds hHost σ
-  have hcar := _root_.GlobalTheory.Mem.R3.LabCarry.carried hW hDS hHC hCD D G Pl0 I0 T A3 Ks R F cG X0 Y Z hPins hHolds hHost
   obtain ⟨b, hb⟩ := principalLevelFrame.rowRepR_occ R.θ (Y.eFT σ)
   obtain ⟨U, hU, hU0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
   obtain ⟨x, hx, hxU⟩ := hE b U hU
@@ -69,7 +68,8 @@ theorem hasLab_exists : GlobalTheory.Published.WeilRepresentationUnitaryPair →
     rintro rfl
     rw [map_zero] at hxU
     exact hU0 hxU.symm
-  obtain ⟨p, hp⟩ := hcar c b x hx0 hx (by rw [hxU]; exact hU.1)
+  obtain ⟨p, hp⟩ := _root_.GlobalTheory.Mem.R3.LabCarry.carried_of_mem_level (b := b) hCD hPins hHolds hx0 hx
+    (by rw [hxU]; exact hU.1)
   have hinjW : ∀ i, Function.Injective (R.HW i (sg0 D A3.A)).e := fun i => (hPins.char.base.models.HW i _).1
   refine ⟨p, fun i => ?_, fun k hk => ?_⟩
   · rintro _ ⟨y, hy, rfl⟩

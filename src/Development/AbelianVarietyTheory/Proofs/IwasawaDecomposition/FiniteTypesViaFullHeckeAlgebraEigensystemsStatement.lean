@@ -99,7 +99,6 @@ theorem finiteTypes_of_full_heckeAlgebra_eigensystems : GlobalTheory.Published.W
   have hc : ∀ σ, HasLab Y σ (cOf σ) := fun σ => (lab σ).choose_spec
   have rat := _root_.GlobalTheory.Mem.R3.RatSpan.span_jW_wp h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
   have ind := _root_.GlobalTheory.Mem.R3.IsotIndep.isot_iSupIndep h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
-  have dim := _root_.GlobalTheory.Mem.R3.finrank_liftLabel_eq_finrank_face3 h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
   have cnt := _root_.GlobalTheory.Mem.R3.LabCount.cnt h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost cOf hc
   have lam := _root_.GlobalTheory.Mem.R3.LamLab.eigenvalue_eq_of_label h1 h2 h3 h4 D G Pl0 I0 T A3 Ks R F cG X0 Y Z hP hH hHost
   refine ⟨cOf, fun i c => ?_, fun i t σ ht hne => lam σ (cOf σ) i t (hc σ) ht hne, fun c => cnt c⟩
@@ -113,7 +112,8 @@ theorem finiteTypes_of_full_heckeAlgebra_eigensystems : GlobalTheory.Published.W
     rw [σ.2] at this
     exact Submodule.map_le_iff_le_comap.1 this
   refine Submodule.eq_of_le_of_finrank_eq hle ?_
-  rw [dim i c, ← cnt c, Formalism.IndefR.Cx.finrank_iSup_eq_sum _ hind]
+  rw [_root_.GlobalTheory.Mem.R3.finrank_liftLabel_eq_finrank_face3_of_holds Y hP hH i c,
+    ← cnt c, Formalism.IndefR.Cx.finrank_iSup_eq_sum _ hind]
   rw [Finset.sum_subtype (Finset.univ.filter (fun σ => cOf σ = c)) (p := fun σ => cOf σ = c) (by simp)]
   refine Finset.sum_congr rfl fun σ _ => ?_
   exact hIR ((i : ℕ) + 1) (by omega) (by omega) σ.1
