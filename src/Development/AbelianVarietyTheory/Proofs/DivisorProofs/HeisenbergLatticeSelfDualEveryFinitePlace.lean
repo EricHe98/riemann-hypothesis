@@ -258,3 +258,16 @@ theorem latAtV_selfDual : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [
     ring
 
 end GlobalTheory.LatSelfDualAll
+
+namespace GlobalTheory.IndefiniteRowSideFullHecke.WeilTensorModels
+
+theorem IsTriple.latAtV_selfDual {F E : Type} [Field F] [NumberField F] [Field E] [NumberField E]
+    [Algebra F E] {σ : E →ₐ[F] E} {B : Base F E} {a a' : ℕ} {G : Geo σ a a'} {X : Chars F E}
+    {om : Rep σ G.V G.W} {om' : Rep σ G.V' G.W} (hT : IsTriple B G X om om') (v : Pl (F := F))
+    (z : Matrix (Fin a) (Fin (a + a')) (AE F E)) (hz : At (evFin F v) z) :
+    z ∈ latAtV G.V G.W v ↔ ∀ γ ∈ latAtV G.V G.W v,
+      B.ψ (symp (R := AF F) (cA σ) (-1) (incM F G.V.J) (incM F G.W.J) z γ) = 1 :=
+  GlobalTheory.LatSelfDualAll.latAtV_selfDual F E σ B _ _ G.V G.W _ _ _ _
+    hT.base hT.geo.hV hT.geo.hW v z hz
+
+end GlobalTheory.IndefiniteRowSideFullHecke.WeilTensorModels

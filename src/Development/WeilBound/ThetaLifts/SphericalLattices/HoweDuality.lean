@@ -18,7 +18,7 @@ public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.StandardAdel
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.WeilRepresentationLocalityUnitaryGroupV
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.WeilRepresentationLocalityUnitaryGroupWPairVW
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsComplementaryAdelicSchwartzRestFunction
-public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.TensorLatticeInertPlaceSelfDual
+public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.HeisenbergLatticeSelfDualEveryFinitePlace
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.LiftVOneMul
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.OneMemKAt
 public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.InertPlaceBothStabilisersFixVacuum
@@ -1135,7 +1135,7 @@ theorem phase_one : ∀ (F E : Type) [Field F] [NumberField F] [Field E] [Number
     rwa [sub_smul, sub_eq_zero] at h0
   have hz : -((inclR (F := F) (AF F) (θ : E)) • GlobalTheory.LatVac.liftV v (⅟2) • γ) ∈ latAtV G.V G.W v :=
     neg_mem (latAtV_smul_int G.V G.W v θ _ hγ')
-  have key := (GlobalTheory.InertSelfDual.latAtV_selfDual F E σ B a a' G X om om' hT v w hin _ (hst.1 _ hz)).1 hz γ hγ
+  have key := (hT.latAtV_selfDual v _ (hst.1 _ hz)).1 hz γ hγ
   rw [← symp_smul_left, e1]
   refine Eq.trans ?_ key
   congr 1
@@ -1244,7 +1244,7 @@ theorem vac_fixed_and_unique : ∀ (F E : Type) [Field F] [NumberField F] [Field
   · set Λ := (latAtV G.V G.W v).map (GlobalTheory.LatVac.locCo G.M.co v) with hΛ
     have hdual : ∀ l, l ∈ Λ ↔ ∀ m ∈ Λ, GlobalTheory.LatVac.psiAt B.ψ v (l.1 ⬝ᵥ m.2 - m.1 ⬝ᵥ l.2) = 1 :=
       fun l => GlobalTheory.LatVac.DualLoc.map_selfDual v G.M.co B.ψ (latAtV G.V G.W v) hAt
-        (GlobalTheory.InertSelfDual.latAtV_selfDual F E σ B a a' G X om om' hT v w hin) l
+        (hT.latAtV_selfDual v) l
     have hsfix : ∀ l ∈ Λ, GlobalTheory.WeilM.schr (GlobalTheory.LatVac.psiAt B.ψ v) l (s : (Fin a × Fin (a + a') → Fv F v) → ℂ) = s := by
       rintro l ⟨z, hz, rfl⟩
       obtain ⟨u, hu, rfl⟩ := hPs z hz
