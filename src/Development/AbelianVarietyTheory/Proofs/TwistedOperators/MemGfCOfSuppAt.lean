@@ -112,6 +112,7 @@ import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.ThetaPairingIn
 import Development.AbelianVarietyTheory.Proofs.IwasawaDecomposition.IdempotentMulEqZeroOfOrthogonal
 import Development.AbelianVarietyTheory.Proofs.TwistedOperators.ExistsRationalApproxFinitePointVacuumLevel
 import Development.AbelianVarietyTheory.Proofs.UnitaryExistence.ExistsPrincipalLevelSubgroupOpen
+import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ExistsWeilDatumPowersUnramifiedEtaTilde
 
 -- This file was produced by scripts/clump.py from the modules listed below.
 -- Members: Development.AbelianVarietyTheory.Proofs.TwistedOperators.CongruentPairsFixVacuumWeilDatum, Development.AbelianVarietyTheory.Proofs.TwistedOperators.ExistsAlgebraicInvariantFormVacuumSplitPlace, Development.AbelianVarietyTheory.Proofs.SiegelThetaTransformation.ExistsDvdCoprimeMulPow, Development.AbelianVarietyTheory.Proofs.TwistedOperators.FiniteUnitaryPointsMemOfLevelAndSplitPlace, Development.AbelianVarietyTheory.Proofs.TwistedOperators.HeckeCharFiniteIdelesIsAlgebraicOfResEta, Development.AbelianVarietyTheory.Proofs.TwistedOperators.HeckeCharFiniteIdelesIsAlgebraicOfResEtaStatement, Development.AbelianVarietyTheory.Proofs.TwistedOperators.VacuumSelfDualLattices, Development.AbelianVarietyTheory.Proofs.TwistedOperators.VacuumSelfDualLatticesStatement, Development.AbelianVarietyTheory.Proofs.TwistedOperators.MemGfCOfSuppAt
@@ -226,7 +227,7 @@ theorem pair_fix_vacO : ∀ {D : D7} {ψ : AddChar (AF D.host.F) ℂ} {θ : InfF
     obtain ⟨n, hn⟩ := (h2.eventually (Metric.ball_mem_nhds _ hpos)).exists
     rw [hmc n, Pi.smul_apply, smul_eq_mul, dist_eq_norm, ← sub_one_mul, norm_mul] at hn
     have := hc n
-    push_neg at this
+    push Not at this
     nlinarith [norm_nonneg (v w₀)]
   obtain ⟨n, hn⟩ := key
   exact ⟨n₁.factorial * n.factorial, Nat.mul_pos n₁.factorial_pos n.factorial_pos,
@@ -361,7 +362,7 @@ theorem exists_alg_form : ∀ {D : D7} {ψ : AddChar (AF D.host.F) ℂ} {θ : In
     by_cases hB : (1 - (e + (cA D e))) • x ∈ Λ
     · exact ⟨ℓ, hinv, h1, caseB ℓ hinv h1 x hx hB, fun y _ => ⟨1, one_mem _, (one_mul _).symm⟩⟩
     have hex : ¬ ∀ u ∈ Λ, ψ (symplO S T ((1 - (e + (cA D e))) • x) u) = 1 := fun h => hB ((hd _ (fin_smul _ hx)).2 h)
-    push_neg at hex
+    push Not at hex
     obtain ⟨u', hu', hne'⟩ := hex
     have huΛ : (1 - (e + (cA D e))) • u' ∈ Λ := hΛ _ hq1 u' hu'
     have huq : IsHalf (1 - (e + (cA D e))) ((1 - (e + (cA D e))) • u') := (isHalf_iff _ _).2 (by rw [smul_smul, hq1])
@@ -452,14 +453,6 @@ open scoped TensorProduct ComplexConjugate Real Classical
 noncomputable section
 
 namespace GlobalTheory.Ker.DCos
-
-section Generic
-
-variable {R : Type} [CommRing R] {k : ℕ}
-
-variable {E : Type} [Field E] [NumberField E]
-
-end Generic
 
 section Adelic
 
@@ -1120,9 +1113,6 @@ end
 
 end Reformulated
 
-theorem GlobalTheory.FinValAlg.finite_values_isAlgebraic : ∀ {D : D7} {θ : InfFam D} {χ : (Formalism.L2.Theta.AE D)ˣ →* Circle} {n : ℕ}, IsInfFam θ → IsHeckeChar D χ → ResEta D χ n →
-    ∀ x : (Formalism.L2.Theta.AE D)ˣ, infPart D (x : Formalism.L2.Theta.AE D) = 1 → IsAlgebraic ℚ ((χ x : Circle) : ℂ) :=
-  GlobalTheory.FinValAlg.isAlgebraic_of_infPart_eq_one
 end -- clump:auto
 end -- clump:auto
 -- ===== end clump member: Development.AbelianVarietyTheory.Proofs.TwistedOperators.HeckeCharFiniteIdelesIsAlgebraicOfResEta =====
@@ -1140,7 +1130,7 @@ open GlobalTheory.RowEx MeasureTheory
 
 theorem _root_.GlobalTheory.T.heckeChar_finiteIdeles_isAlgebraic_of_resEta : ∀ {D : D7} {θ : InfFam D} {χ : (Formalism.L2.Theta.AE D)ˣ →* Circle} {n : ℕ}, IsInfFam θ → IsHeckeChar D χ → ResEta D χ n →
     ∀ x : (Formalism.L2.Theta.AE D)ˣ, infPart D (x : Formalism.L2.Theta.AE D) = 1 → IsAlgebraic ℚ ((χ x : Circle) : ℂ) := by
-  first | exact @GlobalTheory.FinValAlg.finite_values_isAlgebraic
+  first | exact @GlobalTheory.FinValAlg.isAlgebraic_of_infPart_eq_one
 end -- clump:auto
 end -- clump:auto
 -- ===== end clump member: Development.AbelianVarietyTheory.Proofs.TwistedOperators.HeckeCharFiniteIdelesIsAlgebraicOfResEtaStatement =====
@@ -1447,14 +1437,7 @@ def algGroup : Subgroup (GA D S × GA D T) where
 omit hv hS hT hcS hcT hW in
 theorem mem_GfC_of_suppAt {e : Formalism.L2.Theta.AE D} (he : IsSplitIdem D e) {V : HSp D} {g : GA D V}
     (hg : Formalism.L2.Theta.SuppAt e V g) : g ∈ GfC V := by
-  have h1 := GlobalTheory.SplitScalar.infPart_splitIdem he
-  have h2 := GlobalTheory.PlaceDatum.infPart_cA h1
-  refine MonoidHom.mem_ker.2 (Units.ext ?_)
-  change (Formalism.L2.Theta.mt V g).map (infPart D) = 1
-  rw [← sub_eq_zero]
-  ext i j
-  rw [← GlobalTheory.SplitCharTrivial.map_sub_one, ← hg i j, RingHom.map_mul, RingHom.map_add (f := _), h1, h2, add_zero, zero_mul]
-  rfl
+  apply _root_.GlobalTheory.WeilProduct.mem_GfC_of_suppAt <;> assumption
 
 theorem split_alg {e : Formalism.L2.Theta.AE D} (he : IsSplitIdem D e) {g : GA D S} {h : GA D T}
     (hg : Formalism.L2.Theta.SuppAt e S g) (hh : Formalism.L2.Theta.SuppAt e T h) : IsAlgComb ψ S T v (om (g, h) v) := by

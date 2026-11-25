@@ -50,11 +50,22 @@ public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.FockCoe
 public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.RealLowestKTypeOfExtremalVectorCase
 public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.CoeffSpaceLevelFixesFockVectors
 public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.ExistsBasisVec
-public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.IndexSumOfRank
-public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.InjectiveOfInnerEq
-public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.InnerNeSpherical
+public import Development.AbelianVarietyTheory.Proofs.CoherentCohomologyProofs.LengthCommensurableSpanSpanOfDetNeZero
+public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.LevelCharacterEmbeddingCompat
+public import Development.AbelianVarietyTheory.Proofs.DivisorProofs.ThetaPairCharactersAtLevel
+public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.ExistsLengthEqAndCardEqPowOfIsFiniteLength
+public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.FrameMapAdjointTranslateInvEqMulFrameMatrix
+public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.PrimeIdempotentOfIdempotentSumPlaceSplit
+public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.SchrodingerImagesOrthogonalDisjointSplitSupport
+public import Development.AbelianVarietyTheory.Proofs.IwasawaDecomposition.GramMulInv
+public import Development.AbelianVarietyTheory.Proofs.SatakeParameters.IsPrimeIdemOfInert
+public import Development.AbelianVarietyTheory.Proofs.SatakeParameters.IsSphericalDoubleCosetLabelIffDecreasing
+public import Development.AbelianVarietyTheory.Proofs.TwistedOperators.IdempotentMulAddOneSubInverse
+public import Development.AbelianVarietyTheory.Proofs.TwistedOperators.NsmulProjectionXColumnsMemSelfDualLattice
+public import Development.AbelianVarietyTheory.Proofs.TwistedOperators.TendstoOneOfSummable
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import ReciprocityTheory.ResidueCardinality.ArtinOntoB
 public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.ThetaIPEqStarL2
-public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.TrivAtOne
 public import Development.AbelianVarietyTheory.Proofs.InertiaEigenvalues.UnderEqOfConj
 import Development.AbelianVarietyTheory.Definitions.Foundations.OfInfProjInfMulOfFinProjFin
 import Development.AbelianVarietyTheory.PublishedTheorems.TwistedTraceFormula.UnifModGrowthOfIsUnifModerate
@@ -229,7 +240,6 @@ open Formalism.BasicNotions Formalism.BasicNotions.TH Formalism.MainNotions.Glob
 open Formalism.L2.Theta Formalism.L2.DIV Formalism.L2.Indef
 open Formalism.IndefR.Lev Formalism.IndefR.Mult Formalism.IndefR.Datum Formalism.IndefR.Cx Formalism.IndefR.Links
 open scoped TensorProduct InnerProductSpace
-attribute [local instance] Formalism.BasicNotions.Host.cmStar
 open GlobalTheory.RawLift
 
 end -- clump:auto
@@ -287,7 +297,6 @@ open Formalism.BasicNotions Formalism.BasicNotions.TH Formalism.MainNotions.Glob
 open Formalism.L2.Theta Formalism.L2.DIV Formalism.L2.Indef
 open Formalism.IndefR.Lev Formalism.IndefR.Mult Formalism.IndefR.Datum Formalism.IndefR.Cx Formalism.IndefR.Links
 open scoped TensorProduct InnerProductSpace
-attribute [local instance] Formalism.BasicNotions.Host.cmStar
 open GlobalTheory.RawLift
 
 end -- clump:auto
@@ -329,13 +338,6 @@ namespace GlobalTheory.RawLiftTrans
 
 variable {D : D7} {G : Type} [Group G] [Fintype G] {Pl0 T : Type} {A : FamIn D.what₂.LL G Pl0 T D.R.m}
   {Ks : Type} [Field Ks] [NumberField Ks] [Algebra Ks D.what₂.LL] {R : RealDat D A Ks} {i : Fin D.R.m}
-
-theorem heckeOn_mem_wall (hLP : LevProd R i) (v : HeightOneSpectrum (𝓞 D.host.F)) (f : AE D) (hf : IsFinIdem D v f)
-    (α : GA D (Wc D i)) (hα : SuppF (Wc D i) f α) (C : Finset (GA D (Wc D i))) (hC : ∀ γ ∈ C, SuppF (Wc D i) f γ)
-    (hR : IsCosetRep (Wc D i) {k | k ∈ levW R i ∧ SuppF (Wc D i) f k} α C) (T : MMap (R.MW i (sg0 D A)))
-    (hT : T ∈ R.Wall i (sg0 D A)) : heckeOn (R.MW i (sg0 D A)) C T ∈ R.Wall i (sg0 D A) :=
-  GlobalTheory.T.local_hecke_sum_preserves_principal_level_forms hLP v f hf α hα C hC hR T hT
-
 
 end GlobalTheory.RawLiftTrans
 end -- clump:auto

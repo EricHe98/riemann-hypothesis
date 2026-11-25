@@ -1,10 +1,5 @@
 module
 
-import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.MatchBCX
-import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.MatchIndX
-import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.NormVal
-import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.PolFacts
-
 public import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.GammaLaurentFactors.HodgeTateFromSandwich
 public import GroundTheory.AutomorphicForms.GL2.GJFEInduced
 public import GroundTheory.AutomorphicForms.GL2.GJFELevi
@@ -60,6 +55,10 @@ public import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityA
 public import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.GammaLaurentFactors.LocalEmbeddingNorms.RegroupBC
 public import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.GammaLaurentFactors.LocalEmbeddingNorms.SecDiff
 public import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.GammaLaurentFactors.LocalEmbeddingNorms.SuppFacts
+import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.MatchBCX
+import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.MatchIndX
+import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.NormVal
+import Development.AutomorphicArithmetic.AutomorphicVarieties.ModularityArgument.LeviSmoothLocalization.PrincipalSeriesMatching.PolFacts
 import Formalism.DoubleCosetMeasures.Statement
 import GroundTheory.AutomorphicForms.GL2.GJFEInducedLevi
 import GroundTheory.AutomorphicForms.JacquetAdmissible
@@ -425,10 +424,10 @@ private theorem sum_card_filter {Y : Type*} (s : Multiset Y) (d F : ℕ) (A : Y 
     simp only [Multiset.filter_cons, Multiset.card_add, Finset.sum_add_distrib, ih, mul_add]
     congr 1
     by_cases hB : B y
-    · rw [← h1 y hB, Finset.card_filter, if_pos hB, Multiset.card_singleton, mul_one]
+    · rw [← h1 y hB, Finset.card_filter, ite_eq_left hB, Multiset.card_singleton, mul_one]
       exact Finset.sum_congr rfl fun j _ => by split_ifs <;> simp
-    · rw [if_neg hB]
-      exact Finset.sum_eq_zero fun j _ => by rw [if_neg fun hA => hB (h2 y j hA)]; simp
+    · rw [ite_eq_right hB]
+      exact Finset.sum_eq_zero fun j _ => by rw [ite_eq_right fun hA => hB (h2 y j hA)]; simp
 
 private theorem loc_pow {K : Type} [Field K] [NumberField K] (η : HChar K) (j : ℕ) (v : HeightOneSpectrum (𝓞 K)) :
     (η ^ j).loc v = η.loc v ^ j := by

@@ -842,8 +842,6 @@ open Formalism.MainNotions.ModuliIntegralCharts.H1.BoxTuple Formalism.MainNotion
 open ReciprocityTheory.ChartRestriction.G.TB (colM dAct)
 open IsDedekindDomain
 
-theorem _root_.GlobalTheory.T.pointStatements_on_copies_hold : RPointT ∧ GenPointT := by
-  first | exact @GlobalTheory.PowGerm.pointStatements_on_copies
 end -- clump:auto
 end -- clump:auto
 -- ===== end clump member: Development.AbelianVarietyTheory.Proofs.JetHarmonics.PointStatementsOnCopiesHoldStatement =====

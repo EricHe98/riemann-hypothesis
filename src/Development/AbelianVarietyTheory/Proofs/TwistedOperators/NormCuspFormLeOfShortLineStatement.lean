@@ -1,5 +1,6 @@
 module
 
+import Formalism.LocalToGlobal.SiegelLatticeTheory.FlagStabilizerTensors.AllRowsOf
 public import Development.AbelianVarietyTheory.Definitions.TwistedInnerProducts.DepthPays
 public import Formalism.LocalToGlobal.IndefiniteReal.LevelTypeEquivalence.UnimodInst
 public import Development.AbelianVarietyTheory.Definitions.SemilocalFrames.LayerProd
@@ -262,15 +263,7 @@ theorem kg_one (I : AutInst) (m : ℕ) : (1 : I.Gf) ∈ I.Kg m :=
 
 open Formalism.L2.SG.Pf.unitaryCongruence in
 theorem kg_mul (I : AutInst) (m : ℕ) {x y : I.Gf} (hx : x ∈ I.Kg m) (hy : y ∈ I.Kg m) : x * y ∈ I.Kg m := by
-  refine ⟨K_mul I hx.1 hy.1, fun v hv => ?_⟩
-  obtain ⟨z, hz, hyz⟩ := hy.2 v hv
-  obtain ⟨z', hz', hxz⟩ := hx.2 v hv
-  refine ⟨I.fmat x *ᵥ z + z', add_mem (K_mv I hx.1 hz) hz', ?_⟩
-  have e : (I.fmat (x * y) - 1) *ᵥ v = I.fmat x *ᵥ ((I.fmat y - 1) *ᵥ v) + (I.fmat x - 1) *ᵥ v := by
-    rw [fmat_mul, Matrix.sub_mulVec, Matrix.sub_mulVec, Matrix.sub_mulVec, Matrix.mulVec_sub, Matrix.mulVec_mulVec,
-      Matrix.one_mulVec]
-    abel
-  rw [e, hyz, hxz, Matrix.mulVec_smul, smul_add]
+  apply _root_.Formalism.L2.SG.AllRowsOf.Kg_mul' <;> assumption
 
 
 open Formalism.L2.SG.Pf.unitaryCongruence in
@@ -325,13 +318,13 @@ theorem exists_step (I : AutInst) (x : I.GA) (q : ℕ) (hn : 1 ≤ I.n)
     · norm_num
   have hτ'lt : ∀ i < a, τ' i < τ' (i + 1) := by
     intro i hi
-    simp only [hτ', dif_pos hi]
+    simp only [hτ', dite_eq_left hi]
     split_ifs with h
     · exact hτmono (Fin.mk_lt_mk.2 (Nat.lt_succ_self i))
     · exact (hτ ⟨i, hi⟩).2.1
   have hτ'a : τ' a = 1 / 2 := by simp [hτ']
   have hτ'0 : τ' 0 = least I x := by
-    simp only [hτ', dif_pos (show 0 < a by omega)]
+    simp only [hτ', dite_eq_left (show 0 < a by omega)]
     exact hτ0 (by omega)
   obtain ⟨b, hb, hratio, hsq⟩ := GlobalTheory.exists_consecutive_ratio_le_rpow a q τ' ha haq hτ'pos hτ'lt hτ'a
   rw [hτ'0] at hratio hsq
@@ -681,7 +674,7 @@ theorem prod_map_mulSingle_apply {ι : Type u_1} [DecidableEq ι] {M : ι → Ty
     rw [List.map_cons, List.prod_cons, Pi.mul_apply, ih hl']
     by_cases h : w = a
     · subst h
-      rw [if_neg ha, if_pos List.mem_cons_self, Pi.mulSingle_eq_same, mul_one]
+      rw [ite_eq_right ha, ite_eq_left List.mem_cons_self, Pi.mulSingle_eq_same, mul_one]
     · rw [Pi.mulSingle_eq_of_ne h, one_mul]
       simp only [List.mem_cons, h, false_or]
 
@@ -876,7 +869,7 @@ theorem lip_move_real : ∀ (D : D7) (θ : InfFam D), IsInfFam θ → ∀ (V : H
     funext w
     refine Eq.trans ?_ (list_prod_mulSingle (M := fun w : InfinitePlace (UI.instV fr).F => Formalism.REAL.UJ ((UI.instV fr).ε w))
       (fun v => expUJ (hAZ v).1 * expUJ (hAZ v).2) _ (Finset.nodup_toList _) w).symm
-    refine Eq.trans ?_ (if_pos (Finset.mem_toList.2 (Finset.mem_univ _))).symm
+    refine Eq.trans ?_ (ite_eq_left (Finset.mem_toList.2 (Finset.mem_univ _))).symm
     exact Subtype.ext (Units.ext (hu w))
   have hfac : UI.brg fr (u, 1) = ((Finset.univ : Finset (InfinitePlace D.host.F)).toList.map fun v =>
       oneP θ V ((Formalism.L2.Host.tauPl D).symm v) (fr.P v * Av v * (fr.P v)⁻¹) 1 *
@@ -1159,7 +1152,6 @@ open IsDedekindDomain NumberField MeasureTheory GlobalTheory.ChiGrid GlobalTheor
 open GlobalTheory.IndefiniteRowSideFullHecke.LevelPlusSubgroup (coefPlus Cols SizeRows)
 open GlobalTheory.ChainFr GlobalTheory.SepRows GlobalTheory.SepPer Matrix
 open scoped TensorProduct InnerProductSpace
-attribute [local instance] Formalism.BasicNotions.Host.cmStar
 
 end -- clump:auto
 end -- clump:auto
