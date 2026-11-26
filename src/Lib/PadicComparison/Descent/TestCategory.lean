@@ -393,6 +393,7 @@ def testPoints {R : CommRingCat} [Algebra R OC] :
 ℚ to Sˣ with χ(1) = x, that is, a compatible system of roots of x. -/
 lemma exists_compatible_roots {S : Type} [CommRing S] [h : IsAbsIntegrallyClosed S]
     (x : Additive Sˣ) : ∃ χ : ℚ →+ Additive Sˣ, χ 1 = x := by
+  -- The instance from `exists_nsmul_unit` makes `Sˣ` divisible, hence an injective ℤ-module.
   -- Extend `n ↦ n • x` from `ℤ` to `ℚ`.
   obtain ⟨χ, hχ⟩ : ∃ χ : ℚ →+ Additive Sˣ, χ.comp (Int.castAddHom ℚ) = zmultiplesHom _ x :=
     (Module.Baer.of_divisible _).extension_property_addMonoidHom _ Int.cast_injective _
