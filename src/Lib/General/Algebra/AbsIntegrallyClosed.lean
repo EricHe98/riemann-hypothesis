@@ -93,6 +93,18 @@ lemma exists_pow_eq [hA : IsAbsIntegrallyClosed A] (n : ℕ) [hn : NeZero n] (a 
   simpa [sub_eq_zero] using
     hA.exists_root (X ^ n - C a) (monic_X_pow_sub_C a hn.ne) (by simpa using hn.pos)
 
+/-- Units in an absolutely integrally closed ring admit roots of every positive order. -/
+lemma exists_nsmul_unit [IsAbsIntegrallyClosed A] {n : ℕ} (hn : n ≠ 0) (u : Additive Aˣ) :
+    ∃ v : Additive Aˣ, n • v = u := by
+  have : NeZero n := ⟨hn⟩
+  obtain ⟨v, hv⟩ := exists_pow_eq n (u.toMul : A)
+  exact ⟨.ofMul (.ofPow _ v hn hv), Units.ext hv⟩
+
+/-- The additively written units of an absolutely integrally closed ring are divisible. -/
+noncomputable instance [IsAbsIntegrallyClosed A] : DivisibleBy (Additive Aˣ) ℤ :=
+  @AddGroup.divisibleByIntOfDivisibleByNat _ _
+    (divisibleByOfSMulRightSurj _ _ fun hn u ↦ exists_nsmul_unit hn u)
+
 /-- In a nonzero absolutely integrally closed ring `A`, for `n > 1` and any `c`, `b` in `A`, the
 equation `x ^ n - c * x = b` has a solution `x` in `A`. -/
 lemma exists_pow_sub_mul_eq [hA : IsAbsIntegrallyClosed A] [Nontrivial A] (n : ℕ)
