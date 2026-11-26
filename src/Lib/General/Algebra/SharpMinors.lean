@@ -141,8 +141,8 @@ private lemma isLeast_length_matrixKernel_dvr (A : Matrix r k O) {a : O} (ha : a
     rcases f i with l | l
     · exact mem_matrixKernel.1 hw l
     · exact Finset.sum_eq_zero fun j _ ↦ smul_quot_eq_zero_of_dvd (dvd_mul_right a _) (w j)
-  -- The row lattice contains `a • x` for every `x`. Apply the lattice determinant bound.
-  -- the submodule it supplies annihilates every row of `A`.
+  -- The row lattice contains `a • x` for every `x`. The lattice determinant bound gives a
+  -- submodule of the kernel because it annihilates every row of `A`.
   have h_smul (x : k → O) : a • x ∈ span O (Set.range M.row) := by
     refine span_mono ?_ ((range_vecMulLinear (a • (1 : Matrix k k O))).le ⟨x, by simp⟩)
     exact Set.range_subset_iff.2 fun j ↦ ⟨.inr j, rfl⟩
