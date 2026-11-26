@@ -14,18 +14,18 @@ import Lib.DiscreteSeries.Haar.GramPolar
 import Lib.Weil.Periods.Grading
 
 /-!
-# Kernels of levels as forms, and unfolding of orbital integrals
+# Kernel expansions and unfolding of orbital integrals
 
 This file expands the kernel of `e ⊗ (a ⋆ 1_K)` in an orthonormal basis of forms. It writes
-`vol K` times the trace on forms as the integral over `[G] = Γ \ G` of the kernel on the diagonal. It introduces classes
-of pairs (finite frame, rational matrix) and orbital integrals, and it unfolds the term of an
-irreducible characteristic polynomial into orbital integrals. It ends with triple kernels, the
-rotation of triples and the trace property of this rotation.
+`vol K` times the trace on forms as the integral of the diagonal kernel over `[G] = Γ \ G`.
+Classes of pairs (finite frame, rational matrix) index the orbital integrals in the term of an
+irreducible characteristic polynomial. The file ends with triple kernels, the rotation of triples
+and the trace property of this rotation.
 
 ## Main definitions and results
 
-* `New.Space.partialKernel_convIndicator_eq_sum`: the kernel of `e ⊗ (a ⋆ 1_K)`, for `a` in the group
-  algebra of `G_f`, expands in an orthonormal basis.
+* `New.Space.partialKernel_convIndicator_eq_sum` expands the kernel of `e ⊗ (a ⋆ 1_K)` in an
+  orthonormal basis for `a` in the group algebra of `G_f`.
 * `New.Space.volume_mul_trace_eq`: the volume of the level times the trace on forms is the integral
   over `Γ \ G` of the kernel on the diagonal.
 * `New.frameClass`, `New.Space.orbitalIntegral_unfold`: classes of pairs (finite frame, rational

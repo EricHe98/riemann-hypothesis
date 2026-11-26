@@ -45,6 +45,8 @@ term, is a form.
   `e`; `New.Space.exists_form_eq_tsum` is the case of a sum over `V.Γ` of translates of one
   function. `New.levelSpace (V.formRep e) K` is the space of forms of type `e` fixed by the open
   subgroup `K` of the finite points.
+* `New.Space.exists_kernel_form_of_bump` constructs the level kernel from a compactly supported
+  bump that reproduces the real kernel. `New.Space.exists_kernel_form` gives the cusp-kernel case.
 
 Notions from other files:
 * `New.Space.IsAutomorphic`: continuous, left invariant under the rational points `V.Γ`, and right
@@ -656,7 +658,8 @@ theorem exists_kernel_form_of_bump {E n : Type} [Field E] [CMType E] [Fintype n]
     simp [hc, Set.indicator, ← mul_assoc, K.mul_mem_cancel_right hk]
   -- Fix one rational translate meeting the support. Every other such translate differs
   -- from it by an element carrying the compact support into contact with itself.
-  let I := (ProperSMul.isCompact_setOfPred_inter_nonempty (G := V.Γ) hS hS).finite_of_discrete.toFinset
+  let I :=
+    (ProperSMul.isCompact_setOfPred_inter_nonempty (G := V.Γ) hS hS).finite_of_discrete.toFinset
   let M : ℝ≥0∞ := ‖α.toBoundedContinuousFunction‖₊
   have hbound (g : G E s) : ∑' γ : V.Γ, ‖c (γ.val * g)‖ₑ ≤ ∑ _ ∈ I, M := by
     by_cases h : ∃ γ : V.Γ, γ.val * g ∈ S
@@ -685,7 +688,8 @@ theorem exists_kernel_form_of_bump {E n : Type} [Field E] [CMType E] [Fintype n]
       simp [c, h]
   obtain ⟨k, hk⟩ := exists_form_eq_tsum (V := V) he ⟨K, hK.isOpen⟩
     (c := c) (W := fun (γ : V.Γ) g ↦ c (γ.val * g)) (fun γ ↦ hmeas.comp (measurable_const_mul _))
-    hlevel (fun _ ↦ rfl) (M := ∑ _ ∈ I, M) (ENNReal.sum_ne_top.2 fun _ _ ↦ ENNReal.coe_ne_top) hbound
+    hlevel (fun _ ↦ rfl) (M := ∑ _ ∈ I, M) (ENNReal.sum_ne_top.2 fun _ _ ↦ ENNReal.coe_ne_top)
+    hbound
   refine ⟨k, fun g ↦ ?_⟩
   rw [congrFun hk g, Complex.conj_tsum]
   apply tsum_congr
