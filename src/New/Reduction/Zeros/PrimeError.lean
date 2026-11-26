@@ -101,27 +101,26 @@ lemma lambdaKResidueClass_le_two_mul (n : ℕ) : lambdaKResidueClass d q n ≤ 2
     _ ≤ 2 * Real.log n := mul_le_mul_of_nonneg_left vonMangoldt_le_log zero_le_two
     _ ≤ 2 * n := mul_le_mul_of_nonneg_left (Real.log_le_self n.cast_nonneg) zero_le_two
 
-/-- A bound of Mertens's type: `∑_{n ≤ N} Λ(n) / n ≤ 2 log N`. -/
-lemma sum_vonMangoldt_div_le (N : ℕ) : ∑ n ∈ Ioc 0 N, vonMangoldt n / n ≤ 2 * Real.log N := by
-  -- Use `N / n ≤ 2 ⌊N / n⌋` for `n ≤ N` and `∑ Λ(n) ⌊N / n⌋ = log N! ≤ N log N`.
-  obtain rfl | hN := N.eq_zero_or_pos
-  · simp [Finset.Ioc_self]
-  have h_floor (n : ℕ) (hn : n ∈ Ioc 0 N) : (N : ℝ) / n ≤ 2 * (N / n : ℕ) := by
-    obtain ⟨hn_pos, hn_le⟩ := mem_Ioc.1 hn
-    have h_one : (1 : ℝ) ≤ (N / n : ℕ) := mod_cast Nat.div_pos hn_le hn_pos
-    have h_lt : (N : ℝ) / n < (N / n : ℕ) + 1 := by
-      simpa [Nat.floor_div_eq_div] using Nat.lt_floor_add_one ((N : ℝ) / n)
-    linarith
-  refine le_of_mul_le_mul_left ?_ (Nat.cast_pos.2 hN)
-  calc (N : ℝ) * ∑ n ∈ Ioc 0 N, vonMangoldt n / n
-      ≤ ∑ n ∈ Ioc 0 N, vonMangoldt n * (2 * (N / n : ℕ)) := by
-        simp only [mul_sum, mul_div_left_comm (N : ℝ)]
-        exact sum_le_sum fun n hn ↦ mul_le_mul_of_nonneg_left (h_floor n hn) vonMangoldt_nonneg
-    _ = 2 * ∑ n ∈ Ioc 0 N, Real.log n := by
-        simp only [mul_left_comm _ (2 : ℝ), ← mul_sum, ← sum_Ioc_mul_zeta_eq_sum,
-          vonMangoldt_mul_zeta, log_apply]
-    _ ≤ 2 * ∑ _n ∈ Ioc 0 N, Real.log N := by gcongr with n hn <;> simp_all [mem_Ioc]
-    _ = N * (2 * Real.log N) := by simp [mul_left_comm]
+/-- Summing `Λ(n) ⌊X/n⌋` up to any integer `A ≥ ⌊X⌋` gives at most `X log X`. -/
+lemma sum_vonMangoldt_mul_floor_div_le {X : ℝ} {A : ℕ} (hX : 1 ≤ X) (hA : ⌊X⌋₊ ≤ A) :
+    ∑ n ∈ Icc 1 A, vonMangoldt n * (⌊X⌋₊ / n : ℕ) ≤ X * Real.log X := by
+  let N := ⌊X⌋₊
+  have hNX : (N : ℝ) ≤ X := Nat.floor_le (by linarith)
+  rw [show Icc 1 A = Ioc 0 A by ext n; simp [Nat.lt_iff_add_one_le]]
+  calc ∑ n ∈ Ioc 0 A, vonMangoldt n * (N / n : ℕ)
+      = ∑ n ∈ Ioc 0 N, vonMangoldt n * (N / n : ℕ) := by
+        symm
+        apply sum_subset (fun n hn ↦ mem_Ioc.mpr ⟨(mem_Ioc.mp hn).1, (mem_Ioc.mp hn).2.trans hA⟩)
+        intro n hn hN
+        have h : N < n := lt_of_not_ge fun h ↦ hN (mem_Ioc.mpr ⟨(mem_Ioc.mp hn).1, h⟩)
+        simp [Nat.div_eq_of_lt h]
+    _ = ∑ n ∈ Ioc 0 N, Real.log n := by
+        simp only [← sum_Ioc_mul_zeta_eq_sum, vonMangoldt_mul_zeta, log_apply]
+    _ ≤ ∑ _n ∈ Ioc 0 N, Real.log X := sum_le_sum fun n hn ↦
+        Real.log_le_log (by exact_mod_cast (mem_Ioc.mp hn).1)
+          ((Nat.cast_le.mpr (mem_Ioc.mp hn).2).trans hNX)
+    _ = (N : ℝ) * Real.log X := by simp
+    _ ≤ X * Real.log X := mul_le_mul_of_nonneg_right hNX (Real.log_nonneg hX)
 
 
 /-- Growth of the partial sums. Let `d` be a prime, `q` any natural number, and

@@ -187,48 +187,41 @@ lemma totalRemainder_eq :
   rw [totalRemainder, sum_sub_distrib, sum_const, nsmul_eq_mul, sum_aPlaces_primeSum,
     card_aPlaces_mul_mainPrimeSum, add_sub_cancel_right]
 
-/-- For `0 ≤ y ≤ a = D.a`, `n ≥ 1` and a place `σ` (an element of `D.Φ`) of weight
-`κ(σ) = D.weight σ`, the term `Λ_K(n) (y / n - κ(σ))₊` is at most `2 y Λ(n) / n` for `n` up to the
-cut-off `x₁ = D.x₁`, and at most `0` for `n > x₁` because `κ(σ) ≥ a / x₁`. -/
-lemma lambdaKResidueClass_mul_posPart_le_ite {y : ℝ} (hy : 0 ≤ y) (hya : y ≤ D.a) (σ : D.Φ) {n : ℕ}
-    (hn : 0 < n) :
-    lambdaKResidueClass P.d 1 n * (y / n - D.weight σ : ℝ)⁺ ≤
-      if n ∈ Ioc 0 ⌊D.x₁⌋₊ then 2 * y * (ArithmeticFunction.vonMangoldt n / n) else 0 := by
-  split_ifs with h_mem
-  · have h_part : (y / n - D.weight σ : ℝ)⁺ ≤ y / n :=
-      sup_le (sub_le_self _ (Nat.cast_nonneg _)) (by positivity)
-    calc _ ≤ 2 * ArithmeticFunction.vonMangoldt n * (y / n) :=
-          mul_le_mul (lambdaKResidueClass_le_two_mul_vonMangoldt n) h_part (posPart_nonneg _)
-            (by positivity)
-      _ = 2 * y * (ArithmeticFunction.vonMangoldt n / n) := by ring
-  · have hxn : D.x₁ ≤ n := (Nat.lt_of_floor_lt (by simpa [hn] using h_mem)).le
-    have h_le : y / n ≤ D.weight σ :=
-      calc y / n ≤ D.a / D.x₁ := by gcongr
-        _ ≤ D.weight σ := (D.weight_mem_Icc σ).1
-    rw [posPart_eq_zero.2 (sub_nonpos.2 h_le), mul_zero]
-
-/-- For `0 ≤ y ≤ a = D.a` and every place `τ` (an element of `D.Φ`) the prime sum `s_fin(y,
-τ) = ∑_{1 ≤ n ≤ a} Λ_K(n) (y / n - κ(-n τ))₊` is at most `4 y log x₁`, as only `n ≤ x₁` count. -/
+/-- For `0 ≤ y ≤ a`, the prime sum at every place is at most `2 y log x₁`. -/
 lemma primeSum_le {y : ℝ} (hy : 0 ≤ y) (hya : y ≤ D.a) (τ : D.Φ) :
-    D.primeSum y τ ≤ 4 * y * D.logX₁ := by
-  have h_log : log ⌊D.x₁⌋₊ ≤ D.logX₁ :=
-    (log_le_iff_le_exp (mod_cast Nat.floor_pos.2 (D.le_of_hasLogBound : 1 ≤ D.x₁))).2
-      (Nat.floor_le (exp_nonneg _))
-  calc D.primeSum y τ
-      ≤ ∑ n ∈ Icc 1 D.a,
-          if n ∈ Ioc 0 ⌊D.x₁⌋₊ then 2 * y * (ArithmeticFunction.vonMangoldt n / n) else 0 :=
-        sum_le_sum fun n hn ↦ D.lambdaKResidueClass_mul_posPart_le_ite hy hya _ (mem_Icc.1 hn).1
-    _ ≤ ∑ n ∈ Ioc 0 ⌊D.x₁⌋₊, 2 * y * (ArithmeticFunction.vonMangoldt n / n) := by
-        rw [sum_ite_mem]
-        exact sum_le_sum_of_subset_of_nonneg inter_subset_right fun n _ _ ↦ by positivity
-    _ ≤ 2 * y * (2 * D.logX₁) := by grw [← mul_sum, sum_vonMangoldt_div_le, h_log]
-    _ = 4 * y * D.logX₁ := by ring
+    D.primeSum y τ ≤ 2 * y * D.logX₁ := by
+  let k := y / D.x₁
+  have hx : 0 < D.x₁ := exp_pos _
+  have hk : 0 ≤ k := div_nonneg hy hx.le
+  have hkx : k * D.x₁ = y := div_mul_cancel₀ y hx.ne'
+  -- The weight is at least `k`, so subtracting it pays for rounding `x₁ / n` down.
+  have part (n : ℕ) (σ : D.Φ) : (y / n - D.weight σ)⁺ ≤ k * (⌊D.x₁⌋₊ / n : ℕ) := by
+    have hw : k ≤ D.weight σ :=
+      (div_le_div_of_nonneg_right hya hx.le).trans (D.weight_mem_Icc σ).1
+    have hf := (Nat.lt_floor_add_one (D.x₁ / n)).le
+    rw [Nat.floor_div_natCast] at hf
+    have h := mul_le_mul_of_nonneg_left hf hk
+    rw [← mul_div_assoc, hkx, mul_add, mul_one] at h
+    exact sup_le (by linarith only [h, hw]) (mul_nonneg hk (Nat.cast_nonneg _))
+  calc D.primeSum y τ ≤ ∑ n ∈ Icc 1 D.a,
+          2 * ArithmeticFunction.vonMangoldt n * (k * (⌊D.x₁⌋₊ / n : ℕ)) :=
+        sum_le_sum fun n _ ↦ mul_le_mul (lambdaKResidueClass_le_two_mul_vonMangoldt n)
+          (part n _) (posPart_nonneg _) (by positivity)
+    _ = 2 * k * ∑ n ∈ Icc 1 D.a,
+          ArithmeticFunction.vonMangoldt n * (⌊D.x₁⌋₊ / n : ℕ) := by
+        rw [mul_sum]
+        exact sum_congr rfl fun n _ ↦ by ring
+    _ ≤ 2 * k * (D.x₁ * D.logX₁) := by
+        apply mul_le_mul_of_nonneg_left _ (by positivity)
+        simpa only [x₁, log_exp] using sum_vonMangoldt_mul_floor_div_le (A := D.a) (X := D.x₁)
+          D.le_of_hasLogBound (Nat.floor_le_of_le D.le_of_hasLogBound)
+    _ = 2 * y * D.logX₁ := by rw [← hkx]; ring
 
 /-- For `0 ≤ y ≤ a` and every place `τ` the prime sum `D.primeSum y τ = ∑_{1 ≤ n ≤ a} Λ_K(n)
 (y / n - κ(-n τ))₊` lies between `0` and `y log b`. -/
 lemma primeSum_mem_Icc {y : ℝ} (hy : 0 ≤ y) (hya : y ≤ D.a) (τ : D.Φ) :
     D.primeSum y τ ∈ Set.Icc 0 (y * D.logB) := by
-  have h_scale : 4 * D.logX₁ ≤ D.logB := D.le_of_hasLogBound
+  have h_scale : 2 * D.logX₁ ≤ D.logB := D.le_of_hasLogBound
   refine ⟨sum_nonneg fun n _ ↦ mul_nonneg (lambdaKResidueClass_nonneg P.d 1 n) (posPart_nonneg _),
     ?_⟩
   grw [D.primeSum_le hy hya, ← h_scale]
