@@ -90,6 +90,37 @@ lemma norm_wave (c : ℂ) : ‖wave c‖ = 1 := by simp [wave, Complex.norm_exp]
 
 /-! ### The basis, its levels, the form and the frame -/
 
+section
+
+variable {S T : Type}
+
+/-- The disjoint union of S and j copies of T. -/
+@[instance_reducible]
+def BlockIndex (S T : Type) : ℕ → Type
+  | 0 => S
+  | j + 1 => BlockIndex S T j ⊕ T
+
+variable [Fintype S] [Fintype T]
+
+/-- The index type `BlockIndex S T j` is finite. -/
+instance instFintypeBlockIndex : ∀ j : ℕ, Fintype (BlockIndex S T j)
+  | 0 => ‹Fintype S›
+  | j + 1 => @instFintypeSum (BlockIndex S T j) T (instFintypeBlockIndex j) ‹Fintype T›
+
+/-- Equality in `BlockIndex S T j` is decidable if it is in `S` and `T`, by recursion on `j`. -/
+instance decEqBlockIndex [DecidableEq S] [DecidableEq T] :
+    ∀ j : ℕ, DecidableEq (BlockIndex S T j)
+  | 0 => ‹DecidableEq S›
+  | j + 1 => @instDecidableEqSum (BlockIndex S T j) T (decEqBlockIndex j) ‹DecidableEq T›
+
+/-- The number, from 0 to j, of the block containing an index: 0 on R and l on the l-th copy of
+T. -/
+def blockNumber {R T : Type} : ∀ j : ℕ, BlockIndex R T j → Fin (j + 1)
+  | 0 => 0
+  | j + 1 => castSucc ∘ blockNumber j ⊕ᵥ fun _ ↦ last (j + 1)
+
+end
+
 /-- The index set made of ϱ indices, a middle set μ, and ϱ further indices, as a disjoint union. -/
 abbrev SplitIndex (ϱ : ℕ) (μ : Type) : Type := Fin ϱ ⊕ μ ⊕ Fin ϱ
 
