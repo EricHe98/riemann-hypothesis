@@ -1,5 +1,6 @@
 module
 
+import TauCeti.Analysis.Matrix.L2OpNorm
 public import Mathlib.Analysis.RCLike.Sqrt
 import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Analysis.Calculus.FDeriv.Star
@@ -178,6 +179,11 @@ lemma one_sub_invCorner_mul_mem_slitPlane {Z W : 𝔰.FrameMatrix} (hZ : Z ∈ �
   refine mem_slitPlane_of_norm_lt_one ?_
   grw [norm_neg, norm_mul, (mem_openCell.1 hW).2.le, mul_one, (mem_openCell.1 hZ).2]
 
+lemma differentiable_diagLast_apply (i j : Fin (𝔰.ϱ + 1)) :
+    Differentiable ℂ fun x : ℂ ↦ diagLast (𝔰 := 𝔰) x i j := by
+  revert i j
+  simp [diagonal, eq_comm, diagLast, forall_fin_succ']
+
 /-- The matrix `sectionMatrix Z W` is holomorphic in `(Z, W)` on `Ω × Ω`, where `Ω` is
 `𝔰.openCell`. -/
 lemma differentiableAt_sectionMatrix_uncurry {Z W : 𝔰.FrameMatrix} (hZ : Z ∈ 𝔰.openCell)
@@ -189,8 +195,7 @@ lemma differentiableAt_sectionMatrix_uncurry {Z W : 𝔰.FrameMatrix} (hZ : Z �
   have h_slit := one_sub_invCorner_mul_mem_slitPlane hZ hW
   have hs_ne : (1 - invCorner Z * invCorner W).sqrt ≠ 0 := by
     simp [Complex.sqrt, slitPlane_ne_zero h_slit]
-  have h_diag (i j : Fin (𝔰.ϱ + 1)) : Differentiable ℂ fun x : ℂ ↦ diagLast (𝔰 := 𝔰) x i j := by
-    revert i j; simp [diagonal, eq_comm, diagLast, forall_fin_succ']
+  have h_diag := differentiable_diagLast_apply (𝔰 := 𝔰)
   refine differentiableAt_pi.2 fun i ↦ differentiableAt_pi.2 fun j ↦ ?_
   simp only [uncurry_def, sectionMatrix, sectionFrame, sectionCoeff, invCorner,
     nonsing_inv_eq_ringInverse] at h_slit hs_ne ⊢
@@ -384,7 +389,7 @@ lemma IsBoundedInCell.mul_oneSubNormSqInvCorner_le {Z : 𝔰.FrameMatrix} {T : �
   obtain ⟨-, -, h_diff⟩ := hZ.isUnit_det_and_norm_inv_le hT hY
   have h_corner : ‖invCorner Y‖ ≤ ‖invCorner Z‖ + 2 * T⁻¹ ^ 4 := by
     grw [norm_le_insert' (invCorner Y) (invCorner Z), ← h_diff]
-    exact add_le_add_right (norm_apply_le_l2_opNorm (A := Y⁻¹ - Z⁻¹) 𝔰.top 𝔰.top) _
+    exact add_le_add_right (norm_apply_le_l2_opNorm (Y⁻¹ - Z⁻¹) 𝔰.top 𝔰.top) _
   have h_sq : ‖invCorner Y‖ ^ 2 ≤ ‖invCorner Z‖ ^ 2 + 8 * T⁻¹ ^ 4 := by
     have h_pow_le : T⁻¹ ^ 4 ≤ 1 := pow_le_one₀ (by positivity) (inv_le_one_of_one_le₀ (by linarith))
     grw [h_corner]
@@ -484,14 +489,6 @@ theorem sectionMatrix_mul_frameCols {Z : 𝔰.FrameMatrix} :
   simp [sectionMatrix, inclMatrix, Matrix.sub_mul, diagLast, Matrix.mul_assoc, Matrix.add_mul,
     ← ext_iff, Matrix.one_apply, Matrix.mul_apply, sum_univ_castSucc, diagonal_apply, Fin.ne_of_gt,
     forall_fin_succ']
-
-/-- For index maps `u`, `v`, multiplying `M` by the matrices of basis vectors `(inclMatrix ℂ u)ᴴ`
-on the left and `inclMatrix ℂ v` on the right selects the rows `u` and the columns `v` of `M`. -/
-lemma conjTranspose_inclMatrix_mul_mul_inclMatrix {l m n : Type*} [Fintype n] [DecidableEq n]
-    (M : Matrix n n ℂ) (u : l → n) (v : m → n) :
-    (inclMatrix ℂ u)ᴴ * M * inclMatrix ℂ v = M.submatrix u v := by
-  ext i j
-  simp [inclMatrix, Matrix.mul_apply, Matrix.one_apply]
 
 /-- The Gram matrix of the frame `F = (e₁, …, e_ϱ, z)` for the form `𝔰.J₁` is
 `diagLast 0 - 1 = diag(0, …, 0, -1)`. -/

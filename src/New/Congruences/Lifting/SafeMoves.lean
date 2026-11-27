@@ -481,6 +481,11 @@ lemma SidePairing.isSafeMoveSnd_cocycle {c' : S'.paramLattice} {P : S.SidePairin
   simp only [ruleBound, shiftedOrders, standardDepth]
   split_ifs <;> omega
 
+/-- The path that stays at `(x, x')` is safe: its four moves are zero. -/
+lemma isSafePath_refl {P : S.SidePairing S'} {κ : ℕ} (x : S.extensionLattice.Ambient)
+    (x' : S'.extensionLattice.Ambient) : P.IsSafePath κ x x x x' x' x' := by
+  constructor <;> intro g <;> simp [IsSafe]
+
 lemma smul_sub_mem_letterPart {x : S.extensionLattice.Ambient} (g : k.galMonoid)
     (hx : x ∈ S.extensionLattice.letterPart i) : g • x - x ∈ S.extensionLattice.letterPart i :=
   sub_mem ((gal_smul_mem_letterPart g).2 hx) hx
@@ -627,7 +632,7 @@ lemma SidePairing.isScaledCupCoboundary_of_stops {S S' : PairingSide O} {c : S.p
         (hx i hi) (hx' i hi) (hx _ (hl_cut i)) (hx' _ (hl_cut i)) (h_stop i hi)
     · simp only [d, ite_eq_right hi]
       exact ⟨φ ^ l i • x (i.stepBack (l i)), φ ^ l i • x' (i.stepBack (l i)),
-        h_over (hl_cut i), h_over' (hl_cut i), by constructor <;> intro g <;> simp [IsSafe]⟩
+        h_over (hl_cut i), h_over' (hl_cut i), isSafePath_refl _ _⟩
   choose w w' hw hw' h_path using exists_path
   have h_cocycles (i : k.Letter) (g : k.galMonoid) : P.IsSafeMoveSnd κ
       (φ ^ d i • x (i.stepBack (d i)))
@@ -806,16 +811,6 @@ lemma _root_.New.Lift.FitsWindows.abs_add_of_opposite {η b W : ℕ} {ε : ℤˣ
   rcases hV v hv with h | ⟨h, hv⟩ | ⟨h, hv⟩ <;>
     rcases hV' v' hv' with h' | ⟨h', hv'⟩ | ⟨h', hv'⟩ <;> simp only [abs_eq_max_neg] <;> omega
 
-/-- For opposite far windows, the negative sum is bounded by the larger of the
-near-near bound and the near-far bound. -/
-lemma _root_.New.Lift.FitsWindows.neg_add_le_of_opposite {η b W : ℕ} {ε : ℤˣ} {V V' : Finset ℤ}
-    (hV : FitsWindows η (-ε) b W V) (hV' : FitsWindows η ε b W V')
-    {v v' : ℤ} (hv : v ∈ V) (hv' : v' ∈ V') :
-    -(v + v') ≤ max (2 * (η : ℤ)) (b + W + η : ℤ) := by
-  have h := hV.abs_add_of_opposite hV' hv hv'
-  simp only [abs_eq_max_neg] at h
-  omega
-
 /-- Let the jumps of `T` and `S` at a letter `i` lie in `[-η, η]` or in far windows `∓σ [β, β + W]`
 of opposite signs. Then each jump `u` of the Tate dual side of a pairing of `T` and `S` lies near
 `0`, `β` or `-β`: such a jump is `0` or `-(v + w) - 1` for jumps `v` of `T` and `w` of `S`. -/
@@ -829,7 +824,8 @@ lemma tateDualSide_jump_near {k : KummerChart Γ} {O : k.Coeffs} {S : k.PairingS
   obtain rfl | ⟨v, hv, w, hw, rfl⟩ : u = 0 ∨ ∃ v ∈ T.jumpSet i, ∃ w ∈ S.jumpSet i,
     -(v + w) - 1 = u := by simpa [mem_image₂] using hu
   · exact .inl rfl
-  · exact .inr (by simpa only [sub_add_cancel, abs_neg] using hT_window.abs_add_of_opposite hS_window hv hw)
+  · exact .inr
+      (by simpa only [sub_add_cancel, abs_neg] using hT_window.abs_add_of_opposite hS_window hv hw)
 
 /-- A side is down, that is, its jumps are at most `η`, at a letter where they lie in the windows
 `[-η, η]` and `σ [β, β + V]` and the far window is negative or ends at or below `η`. -/

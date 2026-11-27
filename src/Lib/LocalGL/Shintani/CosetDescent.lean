@@ -163,12 +163,6 @@ lemma isClassFunction_evalGL : IsClassFunction (F.evalGL (n := n)) := by
     simClassOf_eq_of_equiv x.toLin.toLinearEquiv fun v ↦ by simp
   exact congrArg F h_sim.symm
 
-private lemma evalGL_sub (X Y : Hall k₀) (γ : GL n k₀) :
-    (X - Y).evalGL γ = X.evalGL γ - Y.evalGL γ := rfl
-
-private lemma evalGL_mulMoebius (X : Hall k₀) (γ : GL n k₀) :
-    X.mulMoebius.evalGL γ = X.evalGL γ * moebius.evalGL γ := rfl
-
 /-- On `GL_m(k₀)`, the function `moebius + (1 - constOne) ^ (m + 1) * -moebius` agrees with
 `moebius`: its second term vanishes on classes of dimension at most `m`. -/
 private lemma evalGL_moebius_add_one_sub_constOne_pow_mul {m : ℕ} (γ : GL (Fin m) k₀) :
@@ -310,8 +304,10 @@ lemma Lift.sub (h : Lift R F F') (h' : Lift R G G') : Lift R (F - G) (F' - G') :
   -- On the coset of each `σ` with fixed field `k`, `Φ - Ψ` takes the value `F γ - G γ`; where the
   -- fixed field is `k'`, it takes the value of `F' - G'`.
   refine ⟨Φ - Ψ, sub_mem hΦ hΨ, fun σ hσ s γ hs hγ ↦ ?_, fun σ hσ s γ hs hγ ↦ ?_⟩
-  · rw [Pi.sub_apply, hΦ_F σ hσ s γ hs hγ, hΨ_G σ hσ s γ hs hγ, evalGL_sub]
-  · rw [Pi.sub_apply, hΦ_F' σ hσ s γ hs hγ, hΨ_G' σ hσ s γ hs hγ, evalGL_sub]
+  · rw [Pi.sub_apply, hΦ_F σ hσ s γ hs hγ, hΨ_G σ hσ s γ hs hγ]
+    rfl
+  · rw [Pi.sub_apply, hΦ_F' σ hσ s γ hs hγ, hΨ_G' σ hσ s γ hs hγ]
+    rfl
 
 omit [Finite k] in
 /-- Let `b` split the indices `n` into ordered blocks. Let `P` be the subgroup of
@@ -398,9 +394,9 @@ lemma Lift.mul (h : Lift Z F F') (h' : Lift Z G G') : Lift Z (F * G) (F' * G') :
       inv_mem' := fun {x} hx ↦ .map x.right⁻¹ ((parabolic _).inv_mem hx) }
   -- `β a i`: the diagonal block of level `i`, with the same Galois part.
   let β (a : ℕ) (i : Bool) : P a →* GalSemidirect k k' {j // b a j = i} :=
-    .mk' (fun s ↦ ⟨blockHom (b a) i ⟨s.1.left, s.2⟩, s.1.right⟩) fun x y ↦
-      SemidirectProduct.ext ((blockHom (b a) i).map_mul ⟨x.1.left, x.2⟩
-        ⟨galActionGL k k' _ x.1.right y.1.left, y.2.map x.1.right⟩) rfl
+    .mk' (fun s ↦ ⟨blockHom (b a) i ⟨s.val.left, s.property⟩, s.val.right⟩) fun x y ↦
+      SemidirectProduct.ext ((blockHom (b a) i).map_mul ⟨x.val.left, x.property⟩
+        ⟨galActionGL k k' _ x.val.right y.val.left, y.property.map x.val.right⟩) rfl
   refine ⟨∑ a ∈ Iic m, induceClassFn rightHom (P a).subtype (∏ i, Φ a i ∘ β a i),
     sum_mem fun a _ ↦ induceClassFn_mem_virtualChars (fun σ ↦ ⟨⟨inr σ, blockTriangular_one⟩, rfl⟩)
       (prod_mem fun i _ ↦ comp_mem_virtualChars (hΦ a i) _),
@@ -432,9 +428,11 @@ lemma Lift.mulMoebius (h : Lift R F F') : Lift R F.mulMoebius F'.mulMoebius := b
   obtain ⟨Ψ, hΨ, hΨ_k, hΨ_k'⟩ := hJ (m + 1) m
   refine ⟨Φ * Ψ, mul_mem hΦ hΨ, fun σ hσ s γ hs hγ ↦ ?_, fun σ hσ s γ hs hγ ↦ ?_⟩
   · rw [Pi.mul_apply, hΦ_F σ hσ s γ hs hγ, hΨ_k σ hσ s γ hs hγ,
-      evalGL_moebius_add_one_sub_constOne_pow_mul, evalGL_mulMoebius]
+      evalGL_moebius_add_one_sub_constOne_pow_mul]
+    rfl
   · rw [Pi.mul_apply, hΦ_F' σ hσ s γ hs hγ, hΨ_k' σ hσ s γ hs hγ,
-      evalGL_moebius_add_one_sub_constOne_pow_mul, evalGL_mulMoebius]
+      evalGL_moebius_add_one_sub_constOne_pow_mul]
+    rfl
 
 /-- If F lifts to F', then (−1)^m times the dimension m part of `F.mulMoebius * constOne` lifts to
 the same expression for F'. Here `F.mulMoebius` is the pointwise product F·μ, with μ the inverse of
@@ -582,7 +580,7 @@ private lemma descendsTo_induceClassFn_greenCuspidal_mulMoebius [Finite k] (hran
   subst hρ
   intro σ hσ
   let B : Basis (Fin m) k' (k' ⊗[k] L) := basis k' b
-  have : Fintype (k' ⊗[k] L) := fintypeOfFintype B
+  let : Fintype (k' ⊗[k] L) := fintypeOfFintype B
   -- The units of `k' ⊗[k] L` fixed by `σ` are those of `L`.
   let ι : Lˣ →* (k' ⊗[k] L)ˣ :=
     Units.map (includeRight : L →ₐ[k] k' ⊗[k] L).toRingHom.toMonoidHom
@@ -648,7 +646,7 @@ private lemma descendsTo_induceClassFn_of_rankInner_eq (φ : k' ⊗[k] L →ₐ[
               Algebra.TensorProduct.map τ.toAlgHom (AlgHom.id k L) t.val))) *
             Y (simClassOf (mulLeft k' t.val))) :
     DescendsTo (induceClassFn rightHom ρ ϑ) X := by
-  have : Fintype (k' ⊗[k] L) := fintypeOfFintype B
+  let : Fintype (k' ⊗[k] L) := fintypeOfFintype B
   -- Here `σ = 1`, and every unit of `k' ⊗[k] L` is its own root.
   intro σ hσ
   obtain rfl : σ = 1 := σ.ext fun x ↦ hσ.le ⟨x, rfl⟩
@@ -707,7 +705,7 @@ lemma exists_torus_induced_descendsTo (hrank : finrank k L = m) (φ : k' ⊗[k] 
   -- induce from there the character `ϑ (a, σ) = ∏ τ, θ (φ (τ a))`.
   let b : Basis (Fin m) k L := finBasisOfFinrankEq k L hrank
   let B : Basis (Fin m) k' (k' ⊗[k] L) := basis k' b
-  have : Fintype (k' ⊗[k] L) := fintypeOfFintype B
+  let : Fintype (k' ⊗[k] L) := fintypeOfFintype B
   -- `σ` acts on `A` through the first factor, hence on coordinates in the basis `B`
   let g (σ : Gal(k'/k)) : k' ⊗[k] L ≃ₐ[k] k' ⊗[k] L := Algebra.TensorProduct.congr σ (1 : Gal(L/k))
   have hrepr (σ : Gal(k'/k)) (x : k' ⊗[k] L) (j : Fin m) : B.repr (g σ x) j = σ (B.repr x j) :=

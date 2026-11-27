@@ -181,9 +181,14 @@ lemma IsTableauBasis.of_linearIndepOn_of_mem_span_of_character {s : Finset (Tabl
 /-- The standard fillings: the members of a chosen finite set of fillings that satisfies
 `IsTableauBasis` as soon as some set does. This is the case for a finite alphabet `m`
 (`isTableauBasis_epsilon`). They need not be semistandard tableaux. -/
-def BasisTableau (m : Type) [DecidableEq m] (N : ℕ) (k : ℕ → ℕ) : Type :=
+def BasisTableau (m : Type) (N : ℕ) (k : ℕ → ℕ) : Type :=
   {T : Tableau m N k // T ∈ (Classical.epsilon IsTableauBasis : Finset (Tableau m N k))}
-deriving Fintype, DecidableEq
+deriving Fintype
+
+instance {m : Type} [DecidableEq m] {N : ℕ} {k : ℕ → ℕ} :
+    DecidableEq (BasisTableau m N k) := by
+  unfold BasisTableau
+  infer_instance
 
 /-- The number of elements of the finite row type n_τ at the place τ. -/
 abbrev rankAt : ℕ := Fintype.card (n τ)
@@ -343,6 +348,7 @@ def schur (z : ∀ τ : Φ, Matrix (n' τ) (n τ) R) :
     (Fintype.linearCombination R fun j ↦ nablaBasis R n κ j * detPow R n (schurDetExp n n' κ)) ∘
       rowSubst z ∘ nablaBasis R n' κ)
 
+omit [(τ : Φ) → DecidableEq (n τ)] [(τ : Φ) → DecidableEq (n' τ)] in
 /-- In the notation of `schur` (`n τ`, `n' τ` the finite row types and `κ τ h` the column counts at
 the place `τ`): if `b'_i(z y)` is a linear combination of the products
 `b_j(y) * ∏ τ, det(y_τ) ^ d τ`, then row `i` of the Schur matrix gives the coefficients of such a
@@ -373,8 +379,8 @@ def weylKernel : MatrixPoly ((τ : Φ) × n τ) R :=
 
 /-- The Gram matrix `G`: chosen integer coefficients of the generic kernel `weylKernel n κ X` in
 the products `b_i(x) * b_j(y)`, where `b` is `nablaBasis`. The kernel is first expanded in the
-`b_i(x)` with coefficients in `ℤ[y]`, and row `i` expands the `i`-th coefficient in the `b_j(y)`;
-see `sum_weylGram_smul_eq_weylKernel_of_exists`. Both expansions exist, and `toPoly_weylEval` states
+`b_i(x)` with coefficients in `ℤ[y]`, and row `i` expands the `i`-th coefficient in the `b_j(y)`.
+Both expansions exist, and `toPoly_weylEval` states
 the resulting identity. It is the matrix of the form on the Weyl module for which the basis tensors
 are orthonormal (`fillingMatrix_transpose_mul_self`). -/
 def weylGram : Matrix (WeylIndexFamily n κ) (WeylIndexFamily n κ) ℤ :=
@@ -732,7 +738,7 @@ private lemma map_minor {h : ℕ} (I : Fin h → m) :
   simp
 
 @[simp]
-lemma map_nablaBasis [∀ τ : Φ, DecidableEq (n τ)] (i : WeylIndexFamily n κ) :
+lemma map_nablaBasis (i : WeylIndexFamily n κ) :
     MvPolynomial.map φ (nablaBasis R n κ i) = nablaBasis S n κ i := by
   simp [nablaBasis, tableauPoly, map_minor]
 

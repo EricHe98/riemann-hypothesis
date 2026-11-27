@@ -301,7 +301,7 @@ lemma InClass.of_jointly_injective [IsDomain O] {ι : Type*} [Finite ι] {M : ι
     (h : ∀ a : ι, InClass F K U (M a)) (f : ∀ a : ι, Y →ₗ[O] M a)
     (hf : ∀ (a : ι) (g : Γ) (x : Y), f a (Y.ρ g x) = (M a).ρ g (f a x))
     (h_inj : ∀ x : Y, (∀ a : ι, f a x = 0) → x = 0) : InClass F K U Y := by
-  have := Fintype.ofFinite ι
+  let := Fintype.ofFinite ι
   refine ⟨?_, fun g u hu ↦ ?_, fun s Q hK hs ↦ ?_⟩
   · exact .of_jointly_injective le_sup_left (fun a ↦ (h a).isAdmissible) (fun a ↦ f a)
       (fun a ↦ .of_forall (hf a)) h_inj
@@ -678,7 +678,7 @@ lemma Period.card_quotient_span_localFieldOf :
         Ideal.span {(ℓ : valRingBelow (localFieldOf Γ) (intQpBar ℓ))}) =
       ℓ ^ 𝒥.toGp.range.index := by
   simp [(of_finite ⟨𝒥.toGp.range, 𝒥.isOpen_range.out⟩).card_quotient,
-    isUniformiser_ell.card_quotient_span_eq_pow isLocalGalois_padic 1, residueCard_padic]
+    isUniformizer_ell.card_quotient_span_eq_pow isLocalGalois_padic 1, residueCard_padic]
 
 /-- For an additive map `f` and a subgroup `H` of its source, the size of the range of `f` divides
 the size of the image of `H` times the index of `H`. -/

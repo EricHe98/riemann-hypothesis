@@ -146,7 +146,7 @@ lemma index_pow_local_le (v : FinPlace K) :
         Nat.card (valRingBelow (LocField v) (intQpBar p) ⧸
           Ideal.span {(n : valRingBelow (LocField v) (intQpBar p))}) := by
     rw [map_pow, ← FinPlace.q, ← hF.residueCard_eq,
-      (hF.isUniformiser_iff.2 (v_uniformizer v)).card_quotient_span_eq_pow hF.toIsLocalGalois _
+      (hF.isUniformizer_iff.2 (v_uniformizer v)).card_quotient_span_eq_pow hF.toIsLocalGalois _
         h_val]
   rw [h_card, sq, mul_right_comm]
   intro i

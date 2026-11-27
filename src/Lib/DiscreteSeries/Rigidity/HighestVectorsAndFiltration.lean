@@ -1,5 +1,6 @@
 module
 
+import TauCeti.Analysis.Matrix.L2OpNorm
 import Mathlib.Algebra.Order.Archimedean.Real.Hom
 import Mathlib.Algebra.Order.Star.Int
 import Mathlib.Algebra.Order.Star.Real
@@ -349,7 +350,7 @@ theorem HCParam.IsKHighest.casimirK_bound_of_highest (hx : l.IsKHighest ρ ν x)
   -- Write `∑ ⟪J_i u, J_i v⟫ = ⟪u, D v⟫`. It is enough that the compression `B` to `U` of
   -- `T = α D Ω_K - β D` is positive. Each eigenspace of `B` is `𝔨`-stable, so it contains a highest
   -- vector, and on that vector `h_bound` shows that the eigenvalue is nonnegative.
-  have ⟨D, hD_comm, hD_form⟩ := hJ
+  let ⟨D, hD_comm, hD_form⟩ := hJ
   let T : End ℂ H := α • D * ρ.casimirK ε - β • D
   let B : End ℂ U := U.orthogonalProjectionOnto.toLinearMap ∘ₗ T.domRestrict U
   have hB_symm : B.IsSymmetric :=
@@ -462,7 +463,7 @@ theorem HCParam.IsKHighest.norm_apply_le_mul_norm (hx : l.IsKHighest ρ ν x)
   -- Bound each `‖X a b‖` by `‖X‖`, square, and apply Cauchy–Schwarz over the pairs `(a, b)`.
   have h_norm : ‖ρ X y‖ ≤ ‖X‖ * ∑ p : n × n, ‖ρ.E p.1 p.2 y‖ := by
     simp only [ρ.apply_eq_sum X, LinearMap.sum_apply, LinearMap.smul_apply]
-    grw [← sum_prod_type', norm_sum_le, norm_smul_le, norm_apply_le_l2_opNorm, ← mul_sum]
+    grw [← sum_prod_type', norm_sum_le, norm_smul_le, Matrix.norm_apply_le_l2_opNorm, ← mul_sum]
   refine (sq_le_sq₀ (norm_nonneg _) (by positivity)).1 ?_
   calc ‖ρ X y‖ ^ 2 ≤ ‖X‖ ^ 2 * (∑ p : n × n, ‖ρ.E p.1 p.2 y‖) ^ 2 := by grw [h_norm, mul_pow]
     _ ≤ ‖X‖ ^ 2 * (#(univ : Finset (n × n)) * (C * ‖y‖ ^ 2)) := by
