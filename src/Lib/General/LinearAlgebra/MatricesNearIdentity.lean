@@ -1,5 +1,6 @@
 module
 
+public import TauCeti.Analysis.Matrix.Frobenius
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 import Mathlib.Analysis.Matrix.Order
@@ -55,8 +56,8 @@ lemma New.hasDerivAt_det_of_eq_one {n : Type*} [Fintype n] [DecidableEq n] {γ :
 
 The main results are the bound `‖tr (X Y)‖ ≤ ‖X‖ ‖Y‖`, invariance under unitary left factors, the
 inverse of `1 + X` for small `X`, the formula `det (exp M) = exp (tr M)`, and the logarithm of
-`1 + X`, written as the integral of `(1 + s X)⁻¹ X` over `[0, 1]`. A matrix at distance less than `1` from the identity
-is accretive.
+`1 + X`, written as the integral of `(1 + s X)⁻¹ X` over `[0, 1]`. A matrix at distance less than
+`1` from the identity is accretive.
 -/
 
 section FrobeniusNormTools
@@ -69,10 +70,6 @@ variable {n : Type*} [Fintype n] [DecidableEq n] {P X Y : Matrix n n ℂ} {ρ : 
 
 /-- An integral weight as a diagonal matrix. -/
 @[simp] abbrev intDiagonal (w : n → ℤ) : Matrix n n ℂ := diagonal fun i ↦ (w i : ℂ)
-
-lemma frobenius_norm_sq_eq_sum : ‖X‖ ^ 2 = ∑ i : n, ∑ j : n, ‖X i j‖ ^ 2 := by
-  simp only [frobenius_norm_def, Real.rpow_two]
-  rw [← Real.sqrt_eq_rpow, Real.sq_sqrt (by positivity)]
 
 /-- The Cauchy–Schwarz inequality for the trace form: `‖tr (X * Y)‖` is at most the product of the
 Hilbert–Schmidt norms of `X` and `Y`. -/
@@ -92,7 +89,7 @@ lemma norm_trace_mul_le {X Y : Matrix n n ℂ} {ρ σ : ℝ} (hX : ‖X‖ ≤ �
   exact (norm_nonneg X).trans hX
 
 lemma trace_star_mul_self_eq_norm_sq : (Xᴴ * X).trace = ((‖X‖ ^ 2 : ℝ) : ℂ) := by
-  rw [frobenius_norm_sq_eq_sum, Finset.sum_comm]
+  rw [frobenius_norm_sq_eq_sum_norm_sq, Finset.sum_comm]
   simp [trace, Matrix.mul_apply, conj_mul']
 
 /-- Left multiplication by a unitary matrix preserves the Hilbert–Schmidt norm. -/

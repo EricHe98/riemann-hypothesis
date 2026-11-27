@@ -148,7 +148,7 @@ abbrev projectedPoincare (s : D.chosenGL) : D.ramifiedSourceForms →ₗ[ℂ] D.
   D.goodPoincare s ∘ₗ D.scaledInclusion
 
 /-- The map `φ ↦ c_B y`, with `y = #Ḡ · e₀ s c_ss⁻¹ 𝒫 φ`. It is the translate `s 𝔭` of
-`𝔭 = c_B c_ss⁻¹ #Ḡ · e₀ 𝒫` (`coe_normalizedPoincare`). -/
+`𝔭 = c_B c_ss⁻¹ #Ḡ · e₀ 𝒫`. -/
 def normalizedPoincare (s : D.chosenGL) : D.ramifiedSourceForms →ₗ[ℂ] D.targetForms :=
   (D.invGainFactor : ℂ) • D.projectedPoincare s
 
@@ -183,8 +183,7 @@ lemma normSqAt_normalizedPoincare (s : D.chosenGL) (φ : D.ramifiedSourceForms) 
   have h_norm : ‖σ D.invGainFactor‖ ^ 2 = exp (2 * log D.invGainFactor) := by
     rw [two_mul, exp_add, exp_log (mod_cast D.invGainFactor_pos), ← sq]
     simp
-  simp only [normalizedPoincare, LinearMap.smul_apply, map_smul, normSqAt, mul_classSum, ← h_norm]
-  exact congrArg _ (funext fun g ↦ weylNormSq_comp_smul _ σ _)
+  rw [normalizedPoincare, LinearMap.smul_apply, map_smul, normSqAt_smul, h_norm]
 
 /-! ### Theorem A -/
 

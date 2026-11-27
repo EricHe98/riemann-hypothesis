@@ -1,5 +1,6 @@
 module
 
+import TauCeti.Analysis.Matrix.IndefiniteUnitaryGroup
 import TauCeti.Analysis.Matrix.LDL
 import TauCeti.Analysis.Matrix.PosSemidef.Determinant
 import TauCeti.LinearAlgebra.Matrix.Determinant.ComplementaryMinor
@@ -48,12 +49,8 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] {P Q : Matrix ι ι ℂ}
 /-- If `P` and `Q - P` are positive semidefinite complex square matrices, that is `0 ≤ P ≤ Q` in
 the Loewner order, then `|det P| ≤ |det Q|`. -/
 lemma New.norm_det_le_norm_det_of_posSemidef (hP : P.PosSemidef) (h_le : (Q - P).PosSemidef) :
-    ‖P.det‖ ≤ ‖Q.det‖ := by
-  have h_det : P.det ≤ Q.det := hP.det_le_det h_le
-  have hnorm {z : ℂ} (hz : 0 ≤ z) : ‖z‖ = z.re := by
-    simpa using congrArg Complex.re (RCLike.norm_of_nonneg' hz)
-  rw [hnorm hP.det_nonneg, hnorm (hP.det_nonneg.trans h_det)]
-  exact (Complex.le_def.1 h_det).1
+    ‖P.det‖ ≤ ‖Q.det‖ :=
+  CStarAlgebra.norm_le_norm_of_le_of_nonneg (hP.det_le_det h_le) hP.det_nonneg
 
 /-- Cauchy–Schwarz inequality for determinants: if the complex block matrix with rows `(P, A)` and
 `(B, Q)`, all blocks square of the same size, is positive semidefinite, then
@@ -361,22 +358,13 @@ theorem U.norm_det : ‖g.val.val.det‖ = 1 :=
 
 /-- For a hermitian involution `J` and `g` in `U J`, the group of `g` with `gᴴ * J * g = J`, the
 inverse of `g` has the operator norm of `g`. -/
-theorem U.norm_inv : ‖g⁻¹.val.val‖ = ‖g.val.val‖ := by
-  -- `g⁻¹ = J * gᴴ * J` with `J` unitary, and the conjugate transpose keeps the operator norm
-  have hJ : J ∈ unitary (Matrix n n ℂ) := IsHermitianInvolution.mem_unitary
-  calc
-    ‖g⁻¹.val.val‖ = ‖J * g.val.valᴴ * J‖ := by rw [coe_inv mul_self]
-    _ = ‖J * g.val.valᴴ‖ := norm_mul_mem_unitary (J * g.val.valᴴ) hJ
-    _ = ‖g.val.valᴴ‖ := norm_mem_unitary_mul g.val.valᴴ hJ
-    _ = ‖g.val.val‖ := l2_opNorm_conjTranspose g.val.val
+theorem U.norm_inv : ‖g⁻¹.val.val‖ = ‖g.val.val‖ :=
+  Matrix.norm_val_inv_of_mem_unitaryGroupOf IsHermitianInvolution.mem_unitary g.property
 
 /-- For a hermitian involution `J` in positive dimension, every element of `U J`, the group of `g`
 with `gᴴ * J * g = J`, has operator norm at least `1`. -/
-theorem U.one_le_norm [Nonempty n] : 1 ≤ ‖g.val.val‖ := by
-  refine (one_le_sq_iff₀ (norm_nonneg _)).1 ?_
-  calc
-    (1 : ℝ) = ‖g⁻¹.val.val * g.val.val‖ := by simp
-    _ ≤ ‖g.val.val‖ ^ 2 := (norm_mul_le _ _).trans_eq (by rw [norm_inv g, pow_two])
+theorem U.one_le_norm [Nonempty n] : 1 ≤ ‖g.val.val‖ :=
+  Matrix.one_le_norm_val_of_mem_unitaryGroupOf IsHermitianInvolution.mem_unitary g.property
 
 end UnitaryNorm
 

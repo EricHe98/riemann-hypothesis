@@ -105,7 +105,7 @@ abbrev cohomologyFunctor (F : AbFunctor C) (n : ℕ) : (T ⥤ AbFunctor C)ᵒᵖ
   opHom T (AbFunctor C) ⋙ (whiskeringRight (Tᵒᵖ) ((AbFunctor C)ᵒᵖ) AddCommGrpCat).obj
     { obj N := .of (H N.unop F n)
       map α := ofHom (map F α.unop n)
-      map_id := by aesop
+      map_id _ := ext H.map_id
       map_comp _ _ := ext (map_comp _ _) }
 
 /-- Continuity of cohomology up to a level. For a cone `c` over a cofiltered system `D j` of
@@ -301,8 +301,6 @@ bijection onto H⁰(T, Λ), and Hⁿ(T, Λ) = 0 for n > 0 (there `locConstClass`
 def IsAcyclicOver (Λ : Ab) : Prop :=
   Function.Injective (locConstClass (Λ := Λ) q 0) ∧ ∀ n : ℕ, Surjective (locConstClass (Λ := Λ) q n)
 
-private lemma locConstClass_succ (n : ℕ) : locConstClass (Λ := Λ) q (n + 1) = 0 := rfl
-
 variable {q}
 
 /-- Naturality of `New.Variety.locConstClass`. Let `q : T ⟶ h_B`, `q' : T' ⟶ h_B'` and `e : T' ⟶ T`.
@@ -358,10 +356,10 @@ lemma IsAcyclicOver.isCohomEquiv (hB : IsDomain B) (hB' : IsDomain B') (u : T' �
     · intro x₁ x₂ _
       obtain ⟨_, rfl⟩ := h_onto (n + 1) x₁
       obtain ⟨_, rfl⟩ := h_onto (n + 1) x₂
-      simp only [locConstClass_succ, AddMonoidHom.zero_apply]
+      simp only [locConstClass, AddMonoidHom.zero_apply]
     · intro y
       obtain ⟨_, rfl⟩ := h_onto' (n + 1) y
-      exact ⟨0, by simp only [map_zero, locConstClass_succ, AddMonoidHom.zero_apply]⟩
+      exact ⟨0, by simp only [map_zero, locConstClass, AddMonoidHom.zero_apply]⟩
 
 /-- A filtered colimit of test rings, taken in commutative rings, is a test ring: absolutely
 integrally closed, comparable for divisibility after splitting by an idempotent, and reduced. -/
@@ -455,10 +453,10 @@ lemma continuousUpTo_locConstCoeff (hL : ∀ j : J, IsTest (L j)) :
   · -- In positive degree `locConstClass` is zero and onto, so every group vanishes.
     refine ⟨fun j x _ ↦ ⟨j, 𝟙 j, ?_⟩, fun y ↦ ?_⟩
     · obtain ⟨_, rfl⟩ := (h_acyclic (hL j)).right (n + 1) x
-      rw [locConstClass_succ, AddMonoidHom.zero_apply, map_zero]
+      simp only [locConstClass, AddMonoidHom.zero_apply, map_zero]
     · obtain ⟨_, rfl⟩ := h_acyclic_colim.right (n + 1) y
       obtain ⟨j⟩ := IsFiltered.nonempty (C := J)
-      exact ⟨j, 0, by rw [map_zero, locConstClass_succ, AddMonoidHom.zero_apply]⟩
+      exact ⟨j, 0, by simp only [map_zero, locConstClass, AddMonoidHom.zero_apply]⟩
 
 end AcyclicTests
 
@@ -734,7 +732,7 @@ lemma baseChangeOf.ext {A R : CommRingCat} {s : X ⟶ reprBy R} {φ : R ⟶ A} {
 /-- For s: X → Y, the base change functor from functors over Y to functors over X, sending E → Y
 to X ×_Y E → X. -/
 def pullbackOver : Over Y ⥤ Over X where
-  obj Z := Over.mk (fibreProd.fst s Z.hom)
+  obj Z := Over.mk (fiberProd.fst s Z.hom)
   map {Z Z'} f :=
     homMk
       { app B := ↾fun x ↦ ⟨(x.val.1, f.left.app B x.val.2), congr(($f.w) B _) ▸ x.property⟩
@@ -750,12 +748,12 @@ instance pullbackOver_isRightAdjoint : (pullbackOver s).IsRightAdjoint where
     ⟨_,
       ⟨(mapPullbackAdj s).ofNatIsoRight
         (NatIso.ofComponents (fun Z ↦
-          let h := isPullback_fibreProd (u := s) (p := Z.hom)
+          let h := isPullback_fiberProd (u := s) (p := Z.hom)
           isoMk h.isoPullback h.isoPullback_hom_snd)
           fun {Z Z'} f ↦ OverMorphism.ext (by
-            let m : fibreProd s Z.hom ⟶ fibreProd s Z'.hom := ((pullbackOver s).map f).left
-            let h := isPullback_fibreProd (u := s) (p := Z.hom)
-            let h' := isPullback_fibreProd (u := s) (p := Z'.hom)
+            let m : fiberProd s Z.hom ⟶ fiberProd s Z'.hom := ((pullbackOver s).map f).left
+            let h := isPullback_fiberProd (u := s) (p := Z.hom)
+            let h' := isPullback_fiberProd (u := s) (p := Z'.hom)
             change m ≫ h'.isoPullback.hom =
               h.isoPullback.hom ≫
                 pullback.lift (pullback.fst Z.hom s ≫ f.left) (pullback.snd Z.hom s) _
@@ -814,7 +812,7 @@ lemma IsCohomContinuous.isFilteredColimit_antitoneFamily (hV : Antitone V) {J : 
     fun U hU A x hx ↦ h_inter fun j ↦ hU (Set.mem_range_self (Opposite.op j)) A hx⟩
   -- pass from subfunctors of `Y` to objects over `Y`, then forget the map to `Y`
   let G : Subfunctor Y ⥤ Over Y := (equivalenceMonoOver Y).functor ⋙ MonoOver.forget Y
-  have h_lim : IsLimit ((Over.forget Y).mapCone (G.mapCone c)) :=
+  let h_lim : IsLimit ((Over.forget Y).mapCone (G.mapCone c)) :=
     isLimitOfPreserves _ (isLimitOfPreserves G (isLimitOfIsGLB _ c h_glb))
   exact isFilteredColimit_iff_bijective.mpr
     (allBijective_iff_forall_bijectiveUpTo.mpr (h h_lim fun j ↦ h_rep (D.obj j.unop)) n)
@@ -856,7 +854,7 @@ lemma IsCohomContinuous.isFilteredColimit_adjoin (h : IsCohomContinuous Λ X) (T
       (Subalgebra.inclusion (adjoin_mono g.le)).toUnder
   let w : Cocone D := ⟨_, NatTrans.mk fun _ ↦ (val _).toUnder⟩
   let wR := (Under.map a).mapCocone w
-  have h_colimit : IsColimit wR := by
+  let h_colimit : IsColimit wR := by
     refine ((reflectsColimit_of_reflectsIsomorphisms _
       (Under.forget R ⋙ forget CommRingCat)).reflects ?_).some
     -- `x` lies in the subalgebra generated by `{x}`, and the maps to `T` are injective.
@@ -869,13 +867,13 @@ lemma IsCohomContinuous.isFilteredColimit_adjoin (h : IsCohomContinuous Λ X) (T
   let D' := ((D ⋙ Under.map a).op ⋙ (opEquivOpUnder R).inverse) ⋙
     Over.post (X := Opposite.op R) uliftCoyoneda
   have h_pullback : PreservesLimit D' (pullbackOver s) := h_preserves.preservesLimit
-  have h_limit := isLimitOfPreserves (Over.forget X)
+  let h_limit := isLimitOfPreserves (Over.forget X)
     (h_pullback.preserves
       (isLimitOfPreserves (Over.post (X := Opposite.op R) uliftCoyoneda)
         (isLimitOfPreserves (opEquivOpUnder R).inverse h_colimit.op))).some
   exact isFilteredColimit_iff_bijective.mpr
     (allBijective_iff_forall_bijectiveUpTo.mpr
-      (h h_limit (fun _ ↦ .baseChange (.map uliftCoyoneda _) isPullback_fibreProd)) n)
+      (h h_limit (fun _ ↦ .baseChange (.map uliftCoyoneda _) isPullback_fiberProd)) n)
 
 /-- The `(m + 1)`-fold fibre power, as a functor on maps of sets, is corepresented by the map from
 `m + 1` points to one point; in particular it preserves limits. -/
@@ -910,18 +908,18 @@ lemma IsCohomContinuous.of_hasCohomDenseImage {T : CommRingCat} {q : reprBy T �
     obtain ⟨B, e⟩ : Σ B : J ⥤ CommRingCat,
         .op B ⋙ uliftCoyoneda ≅ D ⋙ pullbackOver q ⋙ forget (reprBy T) :=
       ⟨.unop _, liftFunctorCompIso _ uliftCoyoneda fun j ↦
-        ⟨_, ⟨((hD j).isPullback q).isoIsPullback _ _ isPullback_fibreProd⟩⟩⟩
+        ⟨_, ⟨((hD j).isPullback q).isoIsPullback _ _ isPullback_fiberProd⟩⟩⟩
     -- the rings `B j` and `colimit B`, indexed by `some j` and `none`
     let R' : Option J → CommRingCat := (·.elim (colimit B) B.obj)
     -- test envelopes `θ : A → E A`: each `E A` is a test ring (`h_test`), and every map to a test
     -- ring from some `B j` or from `colimit B` factors through `θ` (`h_univ`)
     obtain ⟨E, θ, h_test, h_univ⟩ := Envelope.exists_natTrans_isTest_and_factors R'
     -- the cover `p j` is `h_{E (B j)} → h_{B j} ≅ h_T ×_Y D j → D j`; `ε` is the last projection
-    let ε : pullbackOver q ⋙ forget (reprBy T) ⟶ forget Y := { app D := fibreProd.snd q D.hom }
+    let ε : pullbackOver q ⋙ forget (reprBy T) ⟶ forget Y := { app D := fiberProd.snd q D.hom }
     let p : (B ⋙ E).op ⋙ uliftCoyoneda ⟶ D ⋙ forget Y :=
       whiskerRight (NatTrans.op (B.whiskerLeft θ)) _ ≫ e.hom ≫ D.whiskerLeft ε
     have hp (j : Jᵒᵖ) : IsRelAffine (p.app j) := .comp (.map uliftCoyoneda _)
-      (.comp (.of_isIso ..) (hq_rep.baseChange isPullback_fibreProd.flip))
+      (.comp (.of_isIso ..) (hq_rep.baseChange isPullback_fiberProd.flip))
     -- if one of these rings represents the pull-back of `D'`, its envelope has dense image in `D'`:
     -- on tests the image holds the preimage of the image of `q`
     have h_dense {D' : Over Y} (o : Option J)

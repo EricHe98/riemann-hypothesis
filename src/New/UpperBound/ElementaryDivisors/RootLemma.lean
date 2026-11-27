@@ -311,8 +311,11 @@ def zeroOrder (z : Fin k × ZMod N) : ℕ :=
 def crossSign (z : Fin k × ZMod N) : R :=
   if z.2 = D.letter then 0 else D.sign z + D.sign (D.swapVar z)
 
+private lemma one_lt_cast_card [NeZero N] : (1 : ℝ) < D.card := by
+  simpa only [card, cast_pow] using T.one_lt_q
+
 lemma cast_card_pos [NeZero N] : (0 : ℝ) < D.card :=
-  by simpa only [card, cast_pow] using one_pos.trans T.one_lt_q
+  one_pos.trans D.one_lt_cast_card
 
 @[simp] lemma varX_snd : (D.varX s).2 = s := rfl
 
@@ -429,6 +432,8 @@ lemma sign_eq_zero (hz : D.IsFixed z) : D.sign z = 0 := ite_eq_right (hz.ne_varY
 
 lemma poleOrder_eq_zero (hz : D.IsFixed z) : D.poleOrder z = 0 := ite_eq_right (hz.ne_varX z.2)
 
+lemma zeroOrder_eq_zero (hz : D.IsFixed z) : D.zeroOrder z = 0 := ite_eq_right (hz.ne_varY z.2)
+
 lemma crossSign_eq_zero (hz : D.IsFixed z) : D.crossSign z = 0 := by
   simp only [crossSign, hz.sign_eq_zero, Int.cast_zero, hz.swapVar_eq, add_zero, ite_self]
 
@@ -454,7 +459,7 @@ lemma IsFixed.swapVar_merge_eq_self_and_weights_eq_zero {T : FrobeniusCycle N W 
     D.poleOrder z = 0 ∧
     D.zeroOrder z = 0 ∧
     D.crossSign z = 0 :=
-  ⟨hz.swapVar_eq, hz.merge_eq, hz.sign_eq_zero, hz.poleOrder_eq_zero, ite_eq_right (hz.ne_varY z.2),
+  ⟨hz.swapVar_eq, hz.merge_eq, hz.sign_eq_zero, hz.poleOrder_eq_zero, hz.zeroOrder_eq_zero,
     hz.crossSign_eq_zero⟩
 
 /-- The defect weight `T.defectWeight D.letter D.fst D.snd z` of a variable `z` equals
@@ -819,37 +824,20 @@ lemma shiftCoeff_aeval_swapTransvection_X [NeZero N]
       zeroOrder_varX, mul_one, sub_zero, mapAlgHom_apply, map_X, sub_self, abs_zero,
       map_zero, ZMod.val_zero, pow_one, add_sub_cancel_left, cast_zero, smul_zero]
   · -- `z = Y_s` with `s ≠ i`, for both signs
-    rcases D.sign_varY_eq_one_or_neg_one s with h_sign | h_sign
-    · simp only [AlgEquiv.arrowCongr_symm, AlgEquiv.arrowCongr_apply, AlgEquiv.symm_symm,
-        monomial_eq, C_1, pow_zero, prod_single_index, one_mul, swapVar_varY,
-        h_sign, Int.cast_one, varY_snd, map_add, aeval_X, Pi.sub_apply, poleOrder_varX,
-        card, frobPower, merge_varX, crossSign_varX, hs, ↓reduceIte, swapVar_varX,
-        zeroOrder_varY, map_mul, algHom_C, MvPolynomial.algebraMap_apply,
-        MvPolynomial.algebraMap_eq, poleOrder_varY, merge_varY, crossSign_varY,
-        zeroOrder_varX, mul_one, mapAlgHom_apply, map_sub, map_pow, map_C, RingHom.coe_coe,
-        AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, Function.comp_apply,
+    rcases D.sign_varY_eq_one_or_neg_one s with h_sign | h_sign <;>
+      simp only [AlgEquiv.arrowCongr_symm, AlgEquiv.arrowCongr_apply, AlgEquiv.symm_symm,
+        monomial_eq, C_1, pow_zero, prod_single_index, one_mul, swapVar_varY, h_sign, Int.cast_one,
+        varY_snd, map_add, aeval_X, Pi.sub_apply, poleOrder_varX, card, frobPower, merge_varX,
+        crossSign_varX, hs, ↓reduceIte, swapVar_varX, zeroOrder_varY, map_mul, algHom_C,
+        MvPolynomial.algebraMap_apply, MvPolynomial.algebraMap_eq, poleOrder_varY, merge_varY,
+        crossSign_varY, zeroOrder_varX, mul_one, mapAlgHom_apply, map_sub, map_pow, map_C,
+        RingHom.coe_coe, AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, Function.comp_apply,
         MvPolynomial.uniqueAlgEquiv_apply, eval₂_X, Polynomial.taylorAlgHom_apply,
         Polynomial.taylor_X, MvPolynomial.uniqueAlgEquiv_symm_apply, PUnit.default_eq_unit,
-        Polynomial.eval₂_X, Polynomial.eval₂_C, map_X, abs_one,
-        pow_add, cast_add, ZMod.natCast_self, ZMod.natCast_val, dvd_refl, ZMod.cast_sub,
-        ZMod.cast_id', id_eq, zero_add, add_sub_cancel, one_smul]
-      ring
-    · simp only [AlgEquiv.arrowCongr_symm, AlgEquiv.arrowCongr_apply, AlgEquiv.symm_symm,
-        monomial_eq, C_1, pow_zero, prod_single_index, one_mul, swapVar_varY,
-        h_sign, Int.reduceNeg, Int.cast_neg, Int.cast_one, varY_snd, neg_mul,
-        map_add, aeval_X, Pi.sub_apply, poleOrder_varX, card, frobPower, merge_varX,
-        crossSign_varX, hs, ↓reduceIte, swapVar_varX, zeroOrder_varY, sub_neg_eq_add,
-        map_neg, map_mul, algHom_C, MvPolynomial.algebraMap_apply,
-        MvPolynomial.algebraMap_eq, poleOrder_varY, merge_varY, crossSign_varY,
-        zeroOrder_varX, mul_one, mapAlgHom_apply, map_pow, map_C, RingHom.coe_coe,
-        AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, Function.comp_apply,
-        MvPolynomial.uniqueAlgEquiv_apply, eval₂_X, Polynomial.taylorAlgHom_apply,
-        Polynomial.taylor_X, MvPolynomial.uniqueAlgEquiv_symm_apply, PUnit.default_eq_unit,
-        Polynomial.eval₂_X, Polynomial.eval₂_C, map_X,
-        abs_neg, abs_one, pow_add, cast_add, ZMod.natCast_self, ZMod.natCast_val,
-        dvd_refl, ZMod.cast_sub, ZMod.cast_id', id_eq, zero_add, add_sub_cancel, C_sub,
-        neg_smul, one_smul]
-      ring
+        Polynomial.eval₂_X, Polynomial.eval₂_C, map_X, abs_one, pow_add, cast_add,
+        ZMod.natCast_self, ZMod.natCast_val, dvd_refl, ZMod.cast_sub, ZMod.cast_id', id_eq,
+        zero_add, add_sub_cancel, one_smul, Int.reduceNeg, Int.cast_neg, neg_mul, sub_neg_eq_add,
+        map_neg, abs_neg, neg_smul] <;> ring
   · -- `z = X_s` with `s ≠ i`
     simp only [AlgEquiv.arrowCongr_symm, AlgEquiv.arrowCongr_apply, AlgEquiv.symm_symm,
       monomial_eq, C_1, pow_zero, prod_single_index, one_mul, C_pow, swapVar_varX,
@@ -1210,12 +1198,12 @@ theorem FrobeniusCycle.defect_nonpos_of_extreme_term (T : FrobeniusCycle N W R) 
   -- Stepanov's count gives `ν q ≤ q ν'`, and the defect is `(ν - ν') / (q - 1)`.
   have h_count : weight D.zeroOrder α * D.card ≤ weight D.poleOrder α :=
     RootAt.HasBoundedIncrements.weight_zeroOrder_mul_card_le (D := D) hc h_least h_not_dvd
-  have h_card : (1 : ℝ) < D.card := by simpa only [RootAt.card, cast_pow] using T.one_lt_q
   have h_defect : weight (T.defectWeight D.letter D.fst D.snd) α =
       (weight D.zeroOrder α - weight D.poleOrder α / D.card) / (D.card - 1) := by
     simp only [weight_eq_sum, D.defectWeight_eq, nsmul_eq_mul, mul_div, mul_sub,
       ← Finset.sum_div, Finset.sum_sub_distrib, smul_eq_mul, cast_sum, cast_mul]
-  refine h_defect.trans_le (div_nonpos_of_nonpos_of_nonneg (sub_nonpos.2 ?_) (by linarith))
+  refine h_defect.trans_le (div_nonpos_of_nonpos_of_nonneg (sub_nonpos.2 ?_)
+    (sub_nonneg.mpr D.one_lt_cast_card.le))
   exact (le_div_iff₀ D.cast_card_pos).2 (mod_cast h_count)
 
 /-! ### Consequences -/

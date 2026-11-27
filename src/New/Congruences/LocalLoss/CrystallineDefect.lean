@@ -619,8 +619,7 @@ lemma New.Selmer.normLength_dualDefect_le_of_isSummandClass {P : Parameters} {�
     (fun γ u hu ↦ (h_win γ).2 u (filter_subset _ _ hu)) h_dual' ?_
     (two_mul_lt_mul_crystallineLoss_succ D.halfGap D.natB)
     (lt_div_mul_add (crystallineSizes_data D hi).bound_pos)
-    (fun ⦃n⦄ hn hd ↦ le_crystallineLoss_of_pow_dvd
-      ((pow_dvd_pow_of_dvd (hd.trans (dvd_prod_of_mem _ hn)) _).mul_left _))
+    (fun ⦃n⦄ hn hd ↦ cube_le_crystallineLoss_of_dvd hn hd)
     ?_ h_group.1 k ζ h_reads'
   · cases c with
     | none =>

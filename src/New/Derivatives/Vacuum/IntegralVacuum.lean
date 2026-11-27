@@ -114,6 +114,11 @@ lemma exists_smul_vac_eq_sum {E n : Type} [Field E] [CMType E] [WeilData E] [Fin
 noncomputable def zetaCoord (P : Parameters) (s : ℕ) (k : Fin (P.q₁ s)) (y : P.E s) : K P :=
   -Algebra.trace P.K (P.E s) (y * star (P.ζ s ^ k.val)) / P.q₁ s
 
+/-- The coordinate along a vector of the frame commutes with multiplication by elements of `K`. -/
+lemma zetaCoord_smul {P : Parameters} {s : ℕ} (k : Fin (P.q₁ s)) (a : K P) (y : P.E s) :
+    P.zetaCoord s k (a • y) = a * P.zetaCoord s k y := by
+  simp [zetaCoord, mul_div_assoc']
+
 section ThetaProduct
 
 variable {P : Parameters} {s : ℕ} {n : Type} [Fintype n] {ε : n → ℤˣ}
@@ -230,15 +235,11 @@ lemma exists_isThetaProduct [DecidableEq n] (V : Space (P.E s) n ε) [V.IsStd] {
   -- With these two identities the values and series of `hF` are those of a theta product; the
   -- repeated frame vectors give the powers.
   refine ⟨F, hF.mem_finitePart, fun γ ↦ ?_, fun γ c ↦ ?_, h_int, by rwa [hδ_E] at h_periods⟩
-  · rw [hF.theta_translate γ, Fintype.prod_prod_type, Fintype.prod_sigma]
-    refine Finset.prod_congr rfl fun k _ ↦ ?_
-    rw [Finset.prod_comm]
-    refine Finset.prod_congr rfl fun j _ ↦
-      (Finset.prod_congr rfl fun m _ ↦ ?_).trans
-        (by rw [Finset.prod_const, Finset.card_univ, Fintype.card_fin])
-    rw [Pi.one_apply, h_mon, resolutionShift, h_scale, h_coord]
-    rfl
-  · rw [hF.jetSeries_translate γ c, Fintype.prod_prod_type, Fintype.prod_sigma]
+  all_goals
+    first
+    | rw [hF.theta_translate γ]
+    | rw [hF.jetSeries_translate γ c]
+    rw [Fintype.prod_prod_type, Fintype.prod_sigma]
     refine Finset.prod_congr rfl fun k _ ↦ ?_
     rw [Finset.prod_comm]
     refine Finset.prod_congr rfl fun j _ ↦
@@ -777,9 +778,7 @@ lemma exists_isJetConjugate_translates (P : Parameters) (s : ℕ) :
   suffices IsJetConjugate σ (placePerm s σ) (P.jetScale s) t (V.ϱ (finVec (finiteImage γ)) F)
     (V.ϱ (finVec (finiteImage (x₀ • γ))) F') by rwa [h_rational]
   refine hF.isJetConjugate_of_map_taylorAtZero_eq hF' fun k j ↦ ?_
-  rw [zetaCoordThetaTranslate, zetaCoordThetaTranslate, Pi.smul_apply,
-    show ∀ (a : K P) (y : P.E s), P.zetaCoord s k (a • y) = a * P.zetaCoord s k y from
-      fun _ _ ↦ by simp [zetaCoord, mul_div_assoc']]
+  rw [zetaCoordThetaTranslate, zetaCoordThetaTranslate, Pi.smul_apply, zetaCoord_smul]
   exact h_translate σ _ _ (h_coord k j)
 
 end ConjugateTranslates

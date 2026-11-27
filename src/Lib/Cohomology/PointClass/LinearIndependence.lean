@@ -115,7 +115,7 @@ lemma New.Variety.exists_generic_chart {k : Type} [Field k] [CharZero k] {R : Co
     ⟨algHom .., q.ker_algebraMap_residueField.symm⟩
   have hψ_iff (x : a.coordRing) : ψ x = 0 ↔ x * γ = 0 := by simpa [hψ] using Ideal.ext_iff.mp hγ x
   rw [hψ] at hζ
-  have ⟨_, i, hi⟩ := hw₀
+  let ⟨_, i, hi⟩ := hw₀
   have h_ψw_ne : (fun i : ι ↦ ψ (w₀ i)) ≠ 0 := ne_iff.mpr ⟨i, (hi.map ψ).ne_zero⟩
   obtain ⟨n, Λ, hΛ_ne, hΛ⟩ := exists_isNoetherNormalization (k := k) h_ψw_ne
   -- Invert `β`, the product of `γ` and the value of `Λ 0`. Neither factor is in `q` (`γ * γ ≠ 0`),
@@ -180,7 +180,7 @@ lemma New.Variety.injective_aeval_of_isNoetherNormalization {k A F ι : Type} [F
 constant term. If an open `V` contains `η`, then for some `q`, every field point `x` of `Y` lies in
 `V` when its `L`-coordinates `v` lie on the cone of `κ ∘ w` (homogeneous polynomials vanishing at
 `κ ∘ w` vanish at `v`) and satisfy `Λ v = [1 : q]`. -/
-lemma New.Variety.exists_fibre_mem_of_isOpenSubfunctor {k : Type} [Field k] [CharZero k]
+lemma New.Variety.exists_fiber_mem_of_isOpenSubfunctor {k : Type} [Field k] [CharZero k]
     {R : CommRingCat} [Algebra R.carrier k] {Y : Over (AlgebraicGeometry.Spec R)} {ι : Type}
     [Finite ι] {L : LineBundle Y.left ι} [Fact (L.IsProjEmbedding Y.hom)] {A : CommAlg k} {F : Type}
     [Field F] [Algebra k F] {κ : A ⟶ of k F} (hκ : Function.Injective κ) {w : ι → A} {n : ℕ}
@@ -336,7 +336,7 @@ lemma New.Variety.exists_etale_projection {k : Type} [Field k] [CharZero k] {R :
     (h_alg.isAlgebraic r).exists_coeff_ne_zero_and_aeval_eq_zero (mem_nonZeroDivisors_of_ne_zero hr)
   have h_memU : PointsIn.map κ c.point ∈ U.locus.obj (of k F) := ⟨⟨χ⟩, hχ⟩
   obtain ⟨q, h_fibre⟩ :=
-    exists_fibre_mem_of_isOpenSubfunctor hκ hw₁ h_root (hw.comp κ) U.isOpenSubfunctor h_memU
+    exists_fiber_mem_of_isOpenSubfunctor hκ hw₁ h_root (hw.comp κ) U.isOpenSubfunctor h_memU
   -- As `κ` is injective, `w` satisfies the equations of `κ ∘ w`.
   have hw_hom : IsHomogeneousSolution k (κ ∘ w) w :=
     .of_ker κ.hom' 1 (fun r hr ↦ (map_eq_zero_iff κ.hom' hκ).mp hr) .refl
@@ -515,6 +515,14 @@ lemma New.Variety.hodgeTateMap_ne_zero_of_isCoincidenceSet {p : ℕ} {k : Type} 
       map_pointClass_eq_sum_of_isCoincidenceSet proj t ht, h_sum, map_zero, map_zero]
   exact hodgeTateMap_pointClass_ne_zero Q (by rw [hη, hη₀, map_zero])
 
+/-- A functor with a map `j` to a separated functor `X` that is injective on points is separated. -/
+lemma New.Variety.isSeparatedFunctor_of_injective {k : Type} [CommRing k] {W X : CommAlg k ⥤ Type 1}
+    [hX : IsSeparatedFunctor X] (j : W ⟶ X) (hj : ∀ A : CommAlg k, Function.Injective (j.app A)) :
+    IsSeparatedFunctor W :=
+  ⟨fun A y y' ↦ by
+    simpa only [← (hj _).eq_iff, j.naturality_apply] using
+      hX.exists_ideal A (j.app A y) (j.app A y')⟩
+
 /-- Let `k` be algebraically closed of characteristic zero with an embedding in Q̄_p, and let `Y` be
 a scheme over Spec `R`, embedded in projective space by `L` and having an atlas of étale charts of
 dimension `d`. Let `pointClass d z` denote the class of a `k`-point `z` of `Y` in degree-`d` Hodge
@@ -594,9 +602,7 @@ lemma New.Variety.exists_map_separating_class {p : ℕ} {k : Type} [Field k] [Em
     have h_nat := α.naturality_apply σ (⟨ψ⟩ : (reprBy C.coordRing).obj A)
     change α.app A ⟨ψ ≫ σ⟩ = _ at h_nat
     exact (congrArg (fun f : U.coordRing ⟶ A ↦ α.app A ⟨f⟩) h_comp).symm.trans h_nat
-  have h_sep : IsSeparatedFunctor O.toFunctor := ⟨fun A y y' ↦ by
-    simpa only [← (hj _).eq_iff, j.naturality_apply] using
-      IsSeparatedFunctor.exists_ideal A (j.app A y) (j.app A y')⟩
+  have h_sep : IsSeparatedFunctor O.toFunctor := isSeparatedFunctor_of_injective j hj
   -- Pull-back along `proj` is injective, by the Noether normalisation `Λ`.
   have h_inj :
       Function.Injective

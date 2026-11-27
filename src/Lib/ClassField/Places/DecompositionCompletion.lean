@@ -37,7 +37,7 @@ over the completion at `v`.
 * `New.IsCompletionEmb`: the decomposition group of `A` acts on `ℚ̄_p` as the Galois group over the
   completion at `v`, compatibly with an embedding `j : Ω → ℚ̄_p` that induces `A`.
 * `New.IsPlaceOver.exists_isCompletionEmb`: such data exist for every place `A` of `Ω` over `v`.
-* `New.IsPlaceOver.isLocalGalois_and_residueCard_eq_and_isUniformiser`: the fixed field is local
+* `New.IsPlaceOver.isLocalGalois_and_residueCard_eq_and_isUniformizer`: the fixed field is local
   (`New.IsLocalGalois`), with the same residue order, and uniformisers of `K` remain uniformisers.
 * `New.IsPlaceOver.ramification_in_tower`: ramification index and residue degree in a finite
   extension of `K`.
@@ -439,9 +439,9 @@ lemma IsPadicAt.residueCard_eq (h_at : IsPadicAt v p A j) :
 /-- Suppose the embedding of `LocField v` in `ℚ̄_p` and `j` fit together as in `IsPadicAt`. Then an
 element of the completion at `v` is a uniformiser for the integers of `ℚ̄_p` exactly when its
 `v`-adic valuation (written multiplicatively) is `exp (-1)`. -/
-lemma IsPadicAt.isUniformiser_iff {π : LocField v} (h_at : IsPadicAt v p A j) :
-    IsUniformiser (intQpBar p) π ↔ Valued.v π = WithZero.exp (-1) :=
-  isUniformiser_iff_of_isEquiv ((isEquiv_iff_valuationSubring _ _).mpr h_at.valRingBelow_eq)
+lemma IsPadicAt.isUniformizer_iff {π : LocField v} (h_at : IsPadicAt v p A j) :
+    IsUniformizer (intQpBar p) π ↔ Valued.v π = WithZero.exp (-1) :=
+  isUniformizer_iff_of_isEquiv ((isEquiv_iff_valuationSubring _ _).mpr h_at.valRingBelow_eq)
     ⟨(uniformizer v).val, v_uniformizer v⟩
 
 /-- If the place `A` of `Ω` lies over the prime `v` of `K`, then for some prime `p` there are
@@ -500,12 +500,12 @@ def cocycleKer [Monoid R] [DistribMulAction R M] (a : G →* R)
   Subgroup.ofDiv (x ⁻¹' {0})
     -- `x 1 = x 1 + x 1` gives `x 1 = 0`
     ⟨1, by
-      show x 1 = 0
+      change x 1 = 0
       have h1 := c 1 1
       rwa [mul_one, map_one, one_smul, left_eq_add] at h1⟩
     -- `x g = x (g * k⁻¹) + a (g * k⁻¹) • x k`, with `x g = 0` and `x k = 0`
     (fun g (hg : x g = 0) k (hk : x k = 0) ↦ by
-      show x (g * k⁻¹) = 0
+      change x (g * k⁻¹) = 0
       have h := c (g * k⁻¹) k
       rw [inv_mul_cancel_right, hg, hk, smul_zero, add_zero] at h
       exact h.symm)
@@ -562,13 +562,13 @@ variable (Γ : Type*)
 /-- Let the place A of Ω lie over the prime v of K (an integer of K is in the maximal ideal of A
 exactly when it lies in v), and let F be the field fixed by the decomposition group of A, its
 stabiliser in Γ. Then F is a henselian local field for A (`IsLocalGalois`), whose residue field has
-`v.q` elements, the norm of v, and uniformisers of K (`IsUniformiser A`: uniformisers of the
+`v.q` elements, the norm of v, and uniformisers of K (`IsUniformizer A`: uniformisers of the
 valuation ring `A ∩ K`) stay uniformisers of `A ∩ F`. -/
-lemma isLocalGalois_and_residueCard_eq_and_isUniformiser (h : IsPlaceOver A v) :
+lemma isLocalGalois_and_residueCard_eq_and_isUniformizer (h : IsPlaceOver A v) :
     IsLocalGalois (decompGroup Γ A) (fixedFieldOf (decompGroup Γ A)) A ∧
     residueCard (fixedFieldOf (decompGroup Γ A)) A = v.q ∧
-    ∀ {π : Kˣ}, IsUniformiser A π.val →
-      IsUniformiser A (π.map (algebraMap K (fixedFieldOf (decompGroup Γ A))).toMonoidHom).val := by
+    ∀ {π : Kˣ}, IsUniformizer A π.val →
+      IsUniformizer A (π.map (algebraMap K (fixedFieldOf (decompGroup Γ A))).toMonoidHom).val := by
   -- Embed `Ω` in `ℚ̄_p` by an equivariant `j` inducing `A`, such that the decomposition group acts
   -- on `ℚ̄_p` as its Galois group over the completion `LocField v` (`IsCompletionEmb`). The fixed
   -- field `F` then maps into `LocField v`, and everything is read off from the valuation of
@@ -602,7 +602,7 @@ lemma isLocalGalois_and_residueCard_eq_and_isUniformiser (h : IsPlaceOver A v) :
     refine (algebraMap_ResField_surjective v).forall.mpr fun x ↦
       ⟨⟨algebraMap K F x, algebraMap_ringOfIntegers_mem _ x⟩, ?_⟩
     exact congrArg (residue (LocInt v)) (Subtype.ext (hφ x))
-  have res_equiv : (valRingBelow F A ⧸ maximalIdeal (valRingBelow F A)) ≃ ResField v := by
+  let res_equiv : (valRingBelow F A ⧸ maximalIdeal (valRingBelow F A)) ≃ ResField v := by
     rw [← ker_eq_maximalIdeal ψ hψ]
     exact (quotientKerEquivOfSurjective hψ).toEquiv
   -- A uniformiser `π₀` at `v` makes the valuation of `F` nontrivial; hence `A ∩ F` is discrete.
@@ -618,61 +618,61 @@ lemma isLocalGalois_and_residueCard_eq_and_isUniformiser (h : IsPlaceOver A v) :
   refine ⟨h_local, h_card, fun {π} hπ ↦ ?_⟩
   -- In `K` and in `F` alike, a uniformiser is an element of `v`-adic valuation `exp (-1)`.
   have hπ_val : Valued.v.comap φ (algebraMap K F π) = exp (-1) :=
-    (h_val π).trans (h.isUniformiser_iff.mp hπ)
+    (h_val π).trans (h.isUniformizer_iff.mp hπ)
   have h_equiv : (A.valuation.comap (algebraMap F Ω)).IsEquiv (Valued.v.comap φ) :=
     (isEquiv_iff_valuationSubring _ _).mpr h_ring
-  exact (isUniformiser_iff_of_isEquiv h_equiv ⟨_, hπ_val⟩).mpr hπ_val
+  exact (isUniformizer_iff_of_isEquiv h_equiv ⟨_, hπ_val⟩).mpr hπ_val
 
 /-- If A lies over v, the decomposition group of A is the Galois group of Ω over its fixed field F,
 and F is a henselian local field for A: A ∩ F is a discrete valuation ring with finite residue
 field. -/
 lemma isLocalGalois_decompGroup (h : IsPlaceOver A v) :
     IsLocalGalois (decompGroup Γ A) (fixedFieldOf (decompGroup Γ A)) A := by
-  exact (h.isLocalGalois_and_residueCard_eq_and_isUniformiser Γ).left
+  exact (h.isLocalGalois_and_residueCard_eq_and_isUniformizer Γ).left
 
 /-- If A lies over v, the residue field of the field fixed by the decomposition group of A has
 `v.q` elements, as many as that of v. -/
 lemma residueCard_fixedFieldOf_decompGroup (h : IsPlaceOver A v) :
     residueCard (fixedFieldOf (decompGroup Γ A)) A = v.q := by
-  obtain ⟨-, h_card, -⟩ := h.isLocalGalois_and_residueCard_eq_and_isUniformiser Γ
+  obtain ⟨-, h_card, -⟩ := h.isLocalGalois_and_residueCard_eq_and_isUniformizer Γ
   exact h_card
 
 /-- If A lies over v, an element of K that is a uniformiser for A is still a uniformiser in the
 field fixed by the decomposition group of A. -/
-lemma isUniformiser_map_fixedFieldOf_decompGroup (h : IsPlaceOver A v) {π : Kˣ}
-    (hπ : IsUniformiser A π.val) :
-    IsUniformiser A (π.map (algebraMap K (fixedFieldOf (decompGroup Γ A))).toMonoidHom).val := by
-  obtain ⟨-, -, h_unif⟩ := h.isLocalGalois_and_residueCard_eq_and_isUniformiser Γ
+lemma isUniformizer_map_fixedFieldOf_decompGroup (h : IsPlaceOver A v) {π : Kˣ}
+    (hπ : IsUniformizer A π.val) :
+    IsUniformizer A (π.map (algebraMap K (fixedFieldOf (decompGroup Γ A))).toMonoidHom).val := by
+  obtain ⟨-, -, h_unif⟩ := h.isLocalGalois_and_residueCard_eq_and_isUniformizer Γ
   exact h_unif hπ
 
 /-- If A lies over v, some π in Kˣ has v-adic valuation `exp (-1)` and is a uniformiser for A in
 the field fixed by the decomposition group of A. -/
-lemma exists_uniformiser (h : IsPlaceOver A v) :
+lemma exists_uniformizer (h : IsPlaceOver A v) :
     ∃ π : Kˣ,
       v.valuation K π = exp (-1) ∧
-      IsUniformiser A (π.map (algebraMap K (fixedFieldOf (decompGroup Γ A))).toMonoidHom).val := by
+      IsUniformizer A (π.map (algebraMap K (fixedFieldOf (decompGroup Γ A))).toMonoidHom).val := by
   obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
   have hπ_ne : π ≠ 0 := fun h0 ↦ WithZero.exp_ne_zero (hπ.symm.trans (by rw [h0, map_zero]))
   exact ⟨mk0 π hπ_ne, hπ,
-    h.isUniformiser_map_fixedFieldOf_decompGroup Γ (h.isUniformiser_iff.mpr hπ)⟩
+    h.isUniformizer_map_fixedFieldOf_decompGroup Γ (h.isUniformizer_iff.mpr hπ)⟩
 
 /-- If A lies over v, the order on Ωˣ normalised on the field fixed by the decomposition group of A
 agrees with the order normalised on K. -/
 lemma ordRat_fixedFieldOf_decompGroup (h : IsPlaceOver A v) :
     ordRat (fixedFieldOf (decompGroup Γ A)) A = ordRat K A := by
   -- Both sides are chosen by a property quantified over uniformisers; the two properties agree.
-  obtain ⟨π₀, hπ₀_val, hπ₀⟩ := h.exists_uniformiser Γ
+  obtain ⟨π₀, hπ₀_val, hπ₀⟩ := h.exists_uniformizer Γ
   unfold ordRat
   congr! with f
   constructor
   · -- A uniformiser of `K` stays a uniformiser in the fixed field.
-    exact fun hf π hπ ↦ hf _ (h.isUniformiser_map_fixedFieldOf_decompGroup Γ hπ)
+    exact fun hf π hπ ↦ hf _ (h.isUniformizer_map_fixedFieldOf_decompGroup Γ hπ)
   · -- A uniformiser `π` of the fixed field has the same valuation as the uniformiser `π₀` of `K`.
     intro hf π hπ
     have h_val : valuationVia K A π₀ = valuationVia (fixedFieldOf (decompGroup Γ A)) A π :=
       ((hπ _).mp hπ₀.valuationVia_lt_one).antisymm ((hπ₀ _).mp hπ.valuationVia_lt_one)
     rw [← h_val]
-    exact hf π₀ (h.isUniformiser_iff.mpr hπ₀_val)
+    exact hf π₀ (h.isUniformizer_iff.mpr hπ₀_val)
 
 /-- If A lies over v, then Γ contains an arithmetic Frobenius at A: an element that stabilises A
 and acts as x ↦ x ^ v.q modulo the maximal ideal of A (`IsFrob`). -/
@@ -697,7 +697,7 @@ lemma ordRat_eq_zero_iff (h : IsPlaceOver A v) {x : DiscreteUnits Ω} :
 order normalised on K, exactly when x lies in the valuation ring A. -/
 lemma ordRat_nonneg_iff (h : IsPlaceOver A v) (x : DiscreteUnits Ω) :
     0 ≤ ordRat K A x ↔ ↑x.toMul ∈ A := by
-  obtain ⟨π, -, hπ⟩ := h.exists_uniformiser Gal(Ω/K)
+  obtain ⟨π, -, hπ⟩ := h.exists_uniformizer Gal(Ω/K)
   -- Write the order of `x` as `r.num / r.den`; then `x ^ r.den` has the valuation of `π ^ r.num`.
   set r : ℚ := ordRat K A x
   have h_pow : A x.toMul ^ r.den = valuationVia K A π ^ r.num :=
@@ -721,13 +721,13 @@ valuation of x. -/
 lemma ordRat_ofBase (h : IsPlaceOver A v) (x : Kˣ) :
     ordRat K A (ofBase Γ Ω (Additive.ofMul x)) = -(v.valuation K x).log := by
   -- With `π` a uniformiser and `a = -log (v x)`, the elements `x` and `π ^ a` have equal valuation.
-  obtain ⟨π, hπ, h_unif⟩ := h.exists_uniformiser Γ
+  obtain ⟨π, hπ, h_unif⟩ := h.exists_uniformizer Γ
   set a : ℤ := -(v.valuation K x).log
   -- `v (π ^ a) = exp (-1) ^ a = exp (-a) = exp (log (v x)) = v x`.
   have h_val : v.valuation K x = v.valuation K (π ^ a) := by
     rw [map_zpow₀, hπ, ← exp_zsmul, _root_.smul_eq_mul, mul_neg_one]
     simp [a, exp_log]
-  -- By `IsUniformiser.valuation_pow_eq_zpow_iff_mul_ordRat_eq` with exponent `1`, the order of `x`
+  -- By `IsUniformizer.valuation_pow_eq_zpow_iff_mul_ordRat_eq` with exponent `1`, the order of `x`
   -- is `a`.
   have h_ord_eq :
       ((1 : ℕ) : ℚ) * ordRat (fixedFieldOf (decompGroup Γ A)) A (ofBase Γ Ω (.ofMul x)) = a := by
@@ -744,7 +744,7 @@ lemma ordRat_smul (h : IsPlaceOver A v) (g : Γ) (x : DiscreteUnits Ω) :
     ordRat K (g • A) (unitsRep g x) = ordRat K A x := by
   -- Compare both sides with each rational `q`: the inequality `q ≤ ord x` says that
   -- `y = x ^ q.den / π ^ q.num` has nonnegative order, for a uniformiser `π` of `K`.
-  obtain ⟨π, hπ, -⟩ := h.exists_uniformiser Γ
+  obtain ⟨π, hπ, -⟩ := h.exists_uniformizer Γ
   refine eq_of_forall_le_iff fun q ↦ ?_
   let y : DiscreteUnits Ω := q.den • x - q.num • ofBase Γ Ω (.ofMul π)
   -- By `ordRat_nonneg_iff` this is integrality, and `g y ∈ g • A` exactly when `y ∈ A`.
@@ -754,18 +754,17 @@ lemma ordRat_smul (h : IsPlaceOver A v) (g : Γ) (x : DiscreteUnits Ω) :
   -- Expand: `g` fixes `π`, which has order `1` at `A` and at `g • A`; then cancel `q.den`.
   have h_fix_π : unitsRep g (ofBase Γ Ω (.ofMul π) : DiscreteUnits Ω) = ofBase Γ Ω (.ofMul π) :=
     (ofBase Γ Ω (.ofMul π)).property g
-  have h_ord_π : ordRat K A (ofBase Γ Ω (.ofMul π)) = 1 := by
-    rw [h.ordRat_ofBase, hπ, WithZero.log_exp, Int.cast_neg, Int.cast_one, neg_neg]
-  have h_ord_π_g : ordRat K (g • A) (ofBase Γ Ω (.ofMul π)) = 1 := by
-    rw [(h.smul g).ordRat_ofBase, hπ, WithZero.log_exp, Int.cast_neg, Int.cast_one, neg_neg]
+  have h_ord_π {B : ClosurePlace} (hB : IsPlaceOver B v) :
+      ordRat K B (ofBase Γ Ω (.ofMul π)) = 1 := by
+    rw [hB.ordRat_ofBase, hπ, WithZero.log_exp, Int.cast_neg, Int.cast_one, neg_neg]
   have h_ord_y : ordRat K A y = q.den * ordRat K A x - q.num := by
     dsimp only [y]
-    rw [_root_.map_sub, map_nsmul, map_zsmul, nsmul_eq_mul, zsmul_eq_mul, h_ord_π, mul_one]
+    rw [_root_.map_sub, map_nsmul, map_zsmul, nsmul_eq_mul, zsmul_eq_mul, h_ord_π h, mul_one]
   have h_ord_gy :
       ordRat K (g • A) (unitsRep g y) = q.den * ordRat K (g • A) (unitsRep g x) - q.num := by
     dsimp only [y]
     rw [_root_.map_sub, map_nsmul, map_zsmul, h_fix_π, _root_.map_sub, map_nsmul, map_zsmul,
-      nsmul_eq_mul, zsmul_eq_mul, h_ord_π_g, mul_one]
+      nsmul_eq_mul, zsmul_eq_mul, h_ord_π (h.smul g), mul_one]
   rw [h_ord_gy, h_ord_y] at h_int
   -- Cancel `q.den > 0`: `q ≤ t` exactly when `0 ≤ q.den * t - q.num`.
   have h_le (t : ℚ) : q ≤ t ↔ 0 ≤ q.den * t - q.num := by
@@ -806,7 +805,7 @@ lemma ramification_in_tower (h : IsPlaceOver A v) (U : Subgroup Γ) [hU_open : F
   have h_lies : w.asIdeal.LiesOver v.asIdeal := by
     rw [h_below]
     exact ⟨rfl⟩
-  obtain ⟨π, hπ, -⟩ := h.exists_uniformiser Γ
+  obtain ⟨π, hπ, -⟩ := h.exists_uniformizer Γ
   -- `id` keeps `V` folded, so that instance search finds the Galois structure over its fixed field.
   let V : OpenSubgroup (decompGroup Γ A) := id ⟨U.subgroupOf _, hU_open.out.preimage_val⟩
   obtain ⟨-, ⟨e, f, ⟨h_ef, hq, h_ord⟩, h_unram⟩, -⟩ :=
@@ -818,8 +817,8 @@ lemma ramification_in_tower (h : IsPlaceOver A v) (U : Subgroup Γ) [hU_open : F
      fun hx ⟨⟨g, hgU⟩, hgA⟩ ↦ hx ⟨⟨g, hgA⟩, hgU⟩⟩
   let e_field :
       fixedFieldOf (decompGroup U A) ≃+* fixedFieldOf (V : Subgroup (decompGroup Γ A)) :=
-    { toFun := fun x ↦ ⟨x.1, (h_same_set x.1).mp x.2⟩
-      invFun := fun x ↦ ⟨x.1, (h_same_set x.1).mpr x.2⟩
+    { toFun := fun x ↦ ⟨x.val, (h_same_set x.val).mp x.property⟩
+      invFun := fun x ↦ ⟨x.val, (h_same_set x.val).mpr x.property⟩
       left_inv := fun _ ↦ rfl
       right_inv := fun _ ↦ rfl
       map_mul' := fun _ _ ↦ rfl
@@ -827,8 +826,8 @@ lemma ramification_in_tower (h : IsPlaceOver A v) (U : Subgroup Γ) [hU_open : F
   let e_ring :
       valRingBelow (fixedFieldOf (decompGroup U A)) A ≃+*
         valRingBelow (fixedFieldOf (V : Subgroup (decompGroup Γ A))) A :=
-    { toFun := fun x ↦ ⟨e_field x.1, x.2⟩
-      invFun := fun x ↦ ⟨e_field.symm x.1, x.2⟩
+    { toFun := fun x ↦ ⟨e_field x.val, x.property⟩
+      invFun := fun x ↦ ⟨e_field.symm x.val, x.property⟩
       left_inv := fun _ ↦ rfl
       right_inv := fun _ ↦ rfl
       map_mul' := fun _ _ ↦ rfl

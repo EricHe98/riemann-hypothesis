@@ -211,6 +211,13 @@ lemma New.Selmer.two_mul_lt_mul_crystallineLoss_succ {ℓ : ℕ} [hp : ThePrime 
   calc 2 * b < ℓ * (2 * b / ℓ + 1) := lt_mul_div_succ _ hp.out.pos
     _ ≤ ℓ * (crystallineLoss h b ℓ + 1) := by grw [h_div, h_val]
 
+/-- If `ℓ` divides some positive integer in `(b - 5 h³, b + 5 h³]`, then the crystalline loss
+`crystallineLoss h b ℓ` is at least `h³`. -/
+lemma New.Selmer.cube_le_crystallineLoss_of_dvd {ℓ h b n : ℕ} [ThePrime ℓ]
+    (hn : n ∈ Ioc (b - 5 * h ^ 3) (b + 5 * h ^ 3)) (hℓ : ℓ ∣ n) : h ^ 3 ≤ crystallineLoss h b ℓ :=
+  le_crystallineLoss_of_pow_dvd
+    ((pow_dvd_pow_of_dvd (hℓ.trans (dvd_prod_of_mem _ hn)) _).mul_left _)
+
 /-- If `H ≤ 4 b` and `2 log (4 b) < m`, then `⌊log_ℓ H⌋ < m`, because `log ℓ ≥ 1 / 2`. -/
 lemma New.Selmer.natLog_lt_of_two_mul_log_lt {ℓ H b m : ℕ} [hp : ThePrime ℓ]
     (hm : 2 * Real.log (4 * b : ℝ) < m) (hH : H ≤ 4 * b) : ℓ.log H < m := by

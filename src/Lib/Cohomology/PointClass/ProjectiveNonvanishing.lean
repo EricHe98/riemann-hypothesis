@@ -103,7 +103,8 @@ def thickeningOver.oneSubMu :
           have h_zero : mulMu c x * mulMu c y = 0 := by
             exact (mulMu_proj_mul c (mulMu c x) y).symm.trans
               (by rw [proj_mulMu, zero_mul, map_zero])
-          rw [map_add, mul_sub, sub_mul, sub_mul, mul_one, one_mul, h_zero, sub_zero, sub_sub, mul_one] }
+          rw [map_add, mul_sub, sub_mul, sub_mul, mul_one, one_mul, h_zero, sub_zero, sub_sub,
+            mul_one] }
   naturality c d f := by
     refine ext fun t ↦ Gm.ext.2 (.symm ?_)
     change thickeningOver.map f (1 - mulMu c t.down) = 1 - mulMu d (genericOver.map f t.down)
@@ -130,7 +131,8 @@ lemma thickeningOver.shortExact_oneSubMu :
     exact congrArg ULift.up (h_inj c (sub_right_injective h_val))
   · -- Exactness applied to `1 - u`: the units with image `1` are those of the form `1 - mulMu t`.
     have hproj : proj c (1 - u.val) = 1 - proj c u.val :=
-      (c.thickeningProj.map_sub 1 u.val).trans (congrArg (· - proj c u.val) c.thickeningProj.map_one)
+      (c.thickeningProj.map_sub 1 u.val).trans
+      (congrArg (· - proj c u.val) c.thickeningProj.map_one)
     have h_one : proj c u.val = 1 ↔ ∃ t, 1 - mulMu c t = u.val := by
       calc
         _ ↔ proj c (1 - u.val) = 0 := by rw [hproj, sub_eq_zero]; exact eq_comm
@@ -191,8 +193,7 @@ private lemma pull_mk₀_comp_contractionPow_one_eq_pull_extClass_oneSubMu
       pullbackAlong α HodgeTatePair.contractionCocycle.cohomClass :=
     D.cohomClass_naturality _ α (𝟙 _) fun c d f ↦ (Category.comp_id _).symm
   rw [comp_assoc_of_eq h_nat.symm, comp_id]
-  -- `erw`: the right side is type-correct only up to unfolding `ShortComplex.map`, so `rw` fails.
-  erw [← pullbackAlong_of]
+  refine Eq.trans ?_ (pullbackAlong_of _)
   -- A unit of `B ×_T (T ⊕ M)` has a first component in `Bˣ`, which lifts its image in `Tˣ`. By
   -- `Cocycle.cohomClass_comp_eq_extClass` it remains to check that this is a lift, and that its
   -- failure to be natural in the pair is the cocycle `D`, carried into `Bˣ`.
@@ -699,9 +700,16 @@ private lemma projSpace.exists_map_eq_map_of_isTodaCancellation
             aeval b₁.down (v₁ i) * aeval b₀.down (v₀ j)
           have hv₀ : v₀ 0 = X 0 :=
             Fin.insertNth_apply_succAbove (α := fun _ ↦ MvPolynomial (Fin 1) k) 1 1 X 0
-          intro i j
-          fin_cases i <;> fin_cases j <;>
-            simp [hv₀, v₁, Fin.insertNth_zero', aeval_X, mul_comm, h_mul, v₀]
+          have hv₀' : v₀ 1 = 1 :=
+            Fin.insertNth_apply_same (α := fun _ ↦ MvPolynomial (Fin 1) k) 1 1 X
+          have hv₁ : v₁ 0 = 1 :=
+            Fin.insertNth_apply_same (α := fun _ ↦ MvPolynomial (Fin 1) k) 0 1 X
+          have hv₁' : v₁ 1 = X 0 :=
+            Fin.insertNth_apply_succAbove (α := fun _ ↦ MvPolynomial (Fin 1) k) 0 1 X 0
+          -- Two of the four cross products are trivial, and the other two are `h_mul`.
+          simp only [Fin.forall_fin_two, hv₀, hv₀', hv₁, hv₁', map_one, aeval_X, mul_one, one_mul,
+            true_and, and_true]
+          exact ⟨(mul_comm _ _).trans h_mul, h_mul.symm⟩
         change (F.app c).hom ((gluing.app c).hom (.of u)) = 0
         refine (congrArg (F.app c).hom (gluing_apply_torus c t)).trans ?_
         refine (_root_.map_sub (F.app c).hom _ _).trans ?_
@@ -733,12 +741,20 @@ private lemma projSpace.exists_map_eq_map_of_isTodaCancellation
       refine (congrArg P.hom (hF c u)).trans ((_root_.map_sub P.hom _ _).trans ?_)
       change relFreeAb.mk Z (φ c u) - relFreeAb.mk Z (φ c z) = _
       rw [hz, sub_zero]
+      let descend := (r.app C).hom.comp ((s.app C).hom.comp
+        (J.hom.comp ((freeAb.map a).app c).hom))
       obtain ⟨⟨_ | _⟩, t⟩ := u
-      · erw [projFirst_false (B := fun _ ↦ monoidAlg ℚ≥0) c t]
-        simp only [map_zero]
-        exact relFreeAb_mk_stdChart_one_eq_zero C _
-      · erw [projFirst_true (B := fun _ ↦ monoidAlg ℚ≥0) c t, freeAb.map_of]
-        rfl
+      · refine Eq.trans (relFreeAb_mk_stdChart_one_eq_zero C _) ?_
+        symm
+        refine (congrArg descend
+          (projFirst_false (B := fun _ ↦ monoidAlg ℚ≥0) c t)).trans ?_
+        exact map_zero descend
+      · refine Eq.trans ?_ (congrArg
+          descend
+          (projFirst_true (B := fun _ ↦ monoidAlg ℚ≥0) c t)).symm
+        have h_map : ((freeAb.map a).app c).hom (.of t) =
+            FreeAddCommGroup.of (a c t) := freeAb.map_of ..
+        exact (congrArg (fun x ↦ (r.app C).hom ((s.app C).hom (J.hom x))) h_map).symm
   -- `T` is a section of the coordinate map.
   have h_section : s ≫ relFreeAb.map _ cutsOutLocus_stdChart_zero_X.preimage_fieldLocus_not.le = 𝟙
     _ :=
@@ -808,25 +824,25 @@ private lemma teichmullerCoordinate_cancel_twist (c : PadicTest)
   let s : AddMonoidAlgebra OFlat ℚ≥0 := AddMonoidAlgebra.single 1 1
   have h_disc : (discToTorus NNRat.coeHom).hom s = q := by
     change AddMonoidAlgebra.mapDomain NNRat.coeHom s = q
-    erw [AddMonoidAlgebra.mapDomain_single]
+    rw [AddMonoidAlgebra.mapDomain_single]
     rfl
   have h_twist : (charTwist epsPow (AddMonoidHom.id ℚ)).hom q =
       algebraMap OFlat (AddMonoidAlgebra OFlat ℚ) epsTilt * q := by
     change AddMonoidAlgebra.lift OFlat (AddMonoidAlgebra OFlat ℚ) ℚ
       (((algebraMap OFlat (AddMonoidAlgebra OFlat ℚ)).toMonoidHom.comp epsPow) *
         AddMonoidAlgebra.of OFlat ℚ) (AddMonoidAlgebra.of OFlat ℚ (.ofAdd 1)) = _
-    erw [AddMonoidAlgebra.lift_of, MonoidHom.mul_apply, MonoidHom.comp_apply, epsPow_one]
+    rw [AddMonoidAlgebra.lift_of, MonoidHom.mul_apply, MonoidHom.comp_apply, epsPow_one]
     rfl
   change (1 - mulMu c _) * teichmullerLift c
       (t.hom ((charTwist epsPow (AddMonoidHom.id ℚ)).hom ((discToTorus NNRat.coeHom).hom s))) =
     teichmullerLift c (t.hom ((discToTorus NNRat.coeHom).hom s))
-  erw [h_disc, h_twist, _root_.map_mul, t.hom.commutes, _root_.map_mul, teichmullerLift_epsTilt]
+  rw [h_disc, h_twist, _root_.map_mul, t.hom.commutes, _root_.map_mul, teichmullerLift_epsTilt]
   let μ : thickeningOver (k := k) |>.obj c := mulMu c 1
   let u : thickeningOver (k := k) |>.obj c := teichmullerLift c (t.hom q)
   change (1 - μ) * ((1 + μ) * u) = u
   have h_sq : μ * μ = 0 := by
     change mulMu c 1 * mulMu c 1 = 0
-    erw [← mulMu_proj_mul, proj_mulMu, zero_mul, map_zero]
+    rw [← mulMu_proj_mul, proj_mulMu, zero_mul, map_zero]
   have h_cancel : (1 - μ) * (1 + μ) = 1 := by
     calc
       _ = 1 - μ * μ := by ring
@@ -878,14 +894,16 @@ lemma projSpace.exists_hodgeTateMap_pointClass_line :
     let u : (tiltPointsSum pointOrTorus).obj c := ⟨⟨false⟩, t⟩
     change (FreeAddCommGroup.lift (fun t ↦ FreeAddCommGroup.of (torusPoint c t)))
       (((projFirst (B := pointOrTorus)).app c).hom (.of u)) = 0
-    erw [projFirst_false (B := pointOrTorus) c t, map_zero]
+    exact (congrArg (FreeAddCommGroup.lift (fun t ↦ FreeAddCommGroup.of (torusPoint c t)))
+      (projFirst_false (B := pointOrTorus) c t)).trans (map_zero _)
   have h_W_true (c : PadicTest) (t : (tilt ⋙ reprBy (monoidAlg ℚ)).obj c) :
       (W.app c).hom (.of (⟨⟨true⟩, t⟩ : (tiltPointsSum pointOrTorus).obj c)) =
         .of (torusPoint c t) := by
     let u : (tiltPointsSum pointOrTorus).obj c := ⟨⟨true⟩, t⟩
     change (FreeAddCommGroup.lift (fun t ↦ FreeAddCommGroup.of (torusPoint c t)))
       (((projFirst (B := pointOrTorus)).app c).hom (.of u)) = _
-    erw [projFirst_true (B := pointOrTorus) c t, FreeAddCommGroup.lift_apply_of]
+    exact (congrArg (FreeAddCommGroup.lift (fun t ↦ FreeAddCommGroup.of (torusPoint c t)))
+      (projFirst_true (B := pointOrTorus) c t)).trans (FreeAddCommGroup.lift_apply_of ..)
   -- `one` sends every point to the unit of `genericAlg`.
   let one {X : PadicTest ⥤ Type 1} : freeAb X ⟶ genericCoeff :=
     desc (fun c _ ↦ ⟨(1 : genericAlg c)⟩) fun _ _ _ _ ↦
@@ -897,14 +915,16 @@ lemma projSpace.exists_hodgeTateMap_pointClass_line :
     let u : twoDiscs.obj c := ⟨⟨false⟩, t⟩
     change ((freeAb.map a).app c).hom
       (((projFirst (B := fun _ ↦ monoidAlg ℚ≥0)).app c).hom (.of u)) = 0
-    erw [projFirst_false (B := fun _ ↦ monoidAlg ℚ≥0) c t, map_zero]
+    exact (congrArg ((freeAb.map a).app c).hom
+      (projFirst_false (B := fun _ ↦ monoidAlg ℚ≥0) c t)).trans (map_zero _)
   have h_f_true (c : PadicTest) (t : (tilt ⋙ reprBy (monoidAlg ℚ≥0)).obj c) :
       (f.app c).hom (.of (⟨⟨true⟩, t⟩ : twoDiscs.obj c)) =
         FreeAddCommGroup.of (a c t) := by
     let u : twoDiscs.obj c := ⟨⟨true⟩, t⟩
     change ((freeAb.map a).app c).hom
       (((projFirst (B := fun _ ↦ monoidAlg ℚ≥0)).app c).hom (.of u)) = _
-    erw [projFirst_true (B := fun _ ↦ monoidAlg ℚ≥0) c t, freeAb.map_of]
+    exact (congrArg ((freeAb.map a).app c).hom
+      (projFirst_true (B := fun _ ↦ monoidAlg ℚ≥0) c t)).trans (freeAb.map_of ..)
   have h_origin : origin ⟨true⟩ ≫ oneSub (discTwist epsPow) = 0 := by
     refine freeAb.hom_ext fun c t ↦ ?_
     let z : twoDiscs.obj c := ⟨⟨true⟩, ⟨evalZero (tilt.obj c)⟩⟩
@@ -923,17 +943,12 @@ lemma projSpace.exists_hodgeTateMap_pointClass_line :
       (κ.app c).hom (.of (⟨⟨b⟩, t⟩ : twoDiscs.obj c)) =
         if b then ⟨(1 : genericAlg c)⟩ else 0 := by
     let u : twoDiscs.obj c := ⟨⟨b⟩, t⟩
-    have h_proj : ((projFirst (B := fun _ ↦ monoidAlg ℚ≥0)).app c).hom (.of u) =
-        if b then .of t else 0 := by
-      change FreeAddCommGroup.lift _ (.of u) = _
-      erw [FreeAddCommGroup.lift_apply_of]
-      cases b <;> rfl
-    have h_one : (one.app c).hom (.of t) = ⟨(1 : genericAlg c)⟩ := freeAb.desc_of ..
     change (one.app c).hom (((projFirst (B := fun _ ↦ monoidAlg ℚ≥0)).app c).hom (.of u)) = _
-    erw [h_proj]
     cases b
-    · exact map_zero _
-    · exact h_one
+    · exact (congrArg (one.app c).hom
+        (projFirst_false (B := fun _ ↦ monoidAlg ℚ≥0) c t)).trans (map_zero _)
+    · exact (congrArg (one.app c).hom
+        (projFirst_true (B := fun _ ↦ monoidAlg ℚ≥0) c t)).trans (freeAb.desc_of ..)
   -- `exists_isTodaCancellation` for the gluing, with `δ`, `δ'` one minus the twist and `origin`
   -- that of the disc `true`; `h_toda` says that `j^* (unitsExtClass m) = 0` kills the pull-back of
   -- `m` along `one`.
@@ -949,21 +964,14 @@ lemma projSpace.exists_hodgeTateMap_pointClass_line :
       intro c u
       let D := (freeAb.obj (unimodular (d := 1)).toFunctor).map (proj.app c)
       let I := (freeAb.map (unimodular (d := 1)).ι).app (genericOver.obj c)
-      let e : (freeAb.obj (tiltPointsSum pointOrTorus)).obj c := .of u
-      change ((((-W) ≫ whiskerRight proj _) ≫
-        genericOver.whiskerLeft (freeAb.map (unimodular (d := 1)).ι)) c e) = (gluing ≫ f) c e
-      erw [NatTrans.comp_app_apply, NatTrans.comp_app_apply, NatTrans.comp_app_apply]
-      have h_D_apply : ((-W) ≫ whiskerRight proj _) c e =
-          (whiskerRight proj (freeAb.obj (unimodular (d := 1)).toFunctor)) c ((-W) c e) :=
-        NatTrans.comp_app_apply (-W) (whiskerRight proj _) c e
-      erw [h_D_apply]
       change I.hom (D.hom (((-W).app c).hom (.of u))) =
         (f.app c).hom ((gluing.app c).hom (.of u))
       erw [NatTrans.app_neg, AddCommGrpCat.hom_neg, AddMonoidHom.neg_apply]
       obtain ⟨⟨_ | _⟩, t⟩ := u
       · erw [h_W_false, gluing_apply_point c t, h_f_false]
       · have h_D : D.hom (.of (torusPoint c t)) =
-            FreeAddCommGroup.of (((unimodular (d := 1)).toFunctor.map (proj.app c)) (torusPoint c t)) := by
+            FreeAddCommGroup.of (((unimodular (d := 1)).toFunctor.map (proj.app c))
+                (torusPoint c t)) := by
           change FreeAddCommGroup.map _ (.of (torusPoint c t)) = _
           exact FreeAddCommGroup.map_of_apply _
         erw [h_W_true, gluing_apply_torus c t, _root_.map_sub, h_f_false, h_f_true, zero_sub,
@@ -987,15 +995,6 @@ lemma projSpace.exists_hodgeTateMap_pointClass_line :
       let u' : (tiltPointsSum pointOrTorus).obj c :=
         ⟨u.fst, ⟨pointOrTorusTwist epsPow u.fst ≫ u.snd.down⟩⟩
       have ht : T.hom (.of u) = .of u - .of u' := freeAb.desc_of ..
-      let e : (freeAb.obj (tiltPointsSum pointOrTorus)).obj c := .of u
-      change ((oneSub (pointOrTorusTwist epsPow)) ≫
-        ((-W) ≫ thickeningOver.whiskerLeft Gm.ofCoord)) c e = (gluing ≫ κ ≫ oneSubMu) c e
-      rw [NatTrans.comp_app_apply, NatTrans.comp_app_apply, NatTrans.comp_app_apply, NatTrans.comp_app_apply]
-      have h_G_apply (v : (freeAb.obj (tiltPointsSum pointOrTorus)).obj c) :
-          ((-W) ≫ thickeningOver.whiskerLeft Gm.ofCoord) c v =
-            (thickeningOver.whiskerLeft Gm.ofCoord) c ((-W) c v) :=
-        NatTrans.comp_app_apply (-W) (thickeningOver.whiskerLeft Gm.ofCoord) c v
-      erw [h_G_apply]
       change G.hom (((-W).app c).hom (T.hom (.of u))) =
         (oneSubMu.app c).hom ((κ.app c).hom ((gluing.app c).hom (.of u)))
       erw [NatTrans.app_neg, AddCommGrpCat.hom_neg, AddMonoidHom.neg_apply, ht, _root_.map_sub, _root_.map_neg, _root_.map_sub, neg_sub]
@@ -1029,19 +1028,6 @@ lemma projSpace.exists_hodgeTateMap_pointClass_line :
       intro c u
       let e : (freeAb.obj (tiltPointsSum pointOrTorus)).obj c := .of u
       let v := ((-W).app c).hom e
-      change ((((-W) ≫ whiskerRight proj _) ≫ genericOver.whiskerLeft Gm.ofCoord) c e) =
-        ((((-W) ≫ thickeningOver.whiskerLeft Gm.ofCoord) ≫ whiskerRight proj _) c e)
-      rw [NatTrans.comp_app_apply, NatTrans.comp_app_apply]
-      have h_D_apply : ((-W) ≫ whiskerRight proj _) c e =
-          (whiskerRight proj (freeAb.obj (unimodular (d := 1)).toFunctor)) c ((-W) c e) :=
-        NatTrans.comp_app_apply (-W) (whiskerRight proj _) c e
-      have h_G_apply : ((-W) ≫ thickeningOver.whiskerLeft Gm.ofCoord) c e =
-          (thickeningOver.whiskerLeft Gm.ofCoord) c ((-W) c e) :=
-        NatTrans.comp_app_apply (-W) (thickeningOver.whiskerLeft Gm.ofCoord) c e
-      let a₀ := (-W) ≫ thickeningOver.whiskerLeft Gm.ofCoord
-      let π := whiskerRight proj (forget₂ (CommAlg k) CommRingCat ⋙ Gm)
-      have h_right : (a₀ ≫ π) c e = π c (a₀ c e) := NatTrans.comp_app_apply a₀ π c e
-      erw [h_D_apply, h_right, h_G_apply]
       exact Gm.ofCoord.naturality_apply (proj.app c) v
   obtain ⟨j', h_pull⟩ :=
     exists_map_eq_map_of_isTodaCancellation A hA_inv ha_twist h_toda ξT h_compare
@@ -1139,8 +1125,9 @@ lemma New.Variety.hodgeTateMap_pointClass_eq_zero_of_ne {p : ℕ} {k : Type} [Fi
     refine fun A _ ↦ ⟨.scalar _ t, rfl, fun _ _ γ _ _ hγ ↦ ?_⟩
     rw [A.eq_comp_of_map_point_eq _ (h_coincidence.1 _ hγ.symm)]
     simp
-    -- The tangent vector `γ` of the constant map is zero; it is seen as `0` only up to unfolding.
-    repeat erw [sub_zero]
+    -- The tangent vector of the constant map is zero.
+    change _ - (0 : Fin d → k) = t • (_ - (0 : Fin d → k))
+    simp only [sub_zero]
   let x : HodgeH (freeAb.obj X) d := HodgeH.map (freeAb.map (lift (𝟙 X) (constMap z))) δ.baseChange
   have h_scale_eq (t : k) : HodgeH.scale t x = t ^ d • pointClass d z :=
     by
@@ -1236,7 +1223,11 @@ lemma New.Variety.projSpace.hodgeTateMap_pointClass_ne_zero {p : ℕ} {k : Type}
       (HodgeTatePair.cross (restrictToPairs η) (restrictToPairs ξ)) = 0
     · erw [hn, map_nsmul, hodgeTateMap_map, hodgeTateMap_cup, sum_eq_single d _ (by simp)]
       · simp [n_ne, hξ, hη, ← Nat.cast_smul_eq_nsmul k]
-        erw [LinearMap.map_smul]
+        let y : PairH (abTensor (freeAb.obj (projSpace k d)) (freeAb.obj (projSpace k 1))) :=
+          HodgeTatePair.cross (restrictToPairs η) (restrictToPairs ξ)
+        change PairH.map (freeAb.prod (projSpace k d) (projSpace k 1)) ((↑d + 1 : k) • y) = 0 ↔
+          PairH.map (freeAb.prod (projSpace k d) (projSpace k 1)) y = 0
+        rw [LinearMap.map_smul]
         simp [Nat.cast_add_one_ne_zero]
       · intro h _ h_ne
         simp [hodgeTateMap_pointClass_eq_zero_of_ne z h_ne]

@@ -38,7 +38,7 @@ bijections and pull-back squares. The file also builds cocycle classes from witn
 * `New.Variety.Comparison.IsBijective`: for a natural map `α : N' ⟶ c.functor ⋙ N`, the maps
   `c.pull α n : Extⁿ(N, F) → Extⁿ(N', F')` are bijective in all degrees; for `α = freeAbMap u` these
   are the maps `Hⁿ(Y, F) → Hⁿ(Y', F')`.
-* `New.Variety.Comparison.isBijective_of_fibres`: it is enough to test on the fibres over the points
+* `New.Variety.Comparison.isBijective_of_fibers`: it is enough to test on the fibres over the points
   of `Y`; the proof is Čech descent (`New.Variety.Comparison.bijectiveUpTo_of_cech_pred`), one
   condition of `New.Variety.BijectiveUpTo` at a time.
 * `New.Variety.Comparison.HasUniversalPoints.isBijective`: representable fibres with equal
@@ -128,6 +128,10 @@ lemma boundary_comp_boundary (m : ℕ) : boundary R (m + 1) ≫ boundary R m = 0
 the chains with `m` witnesses. -/
 def boundaryFromCoker (m : ℕ) : abCoker (boundary R (m + 1)) ⟶ freeAb.obj (witnessed R m) :=
   desc (α := boundary R (m + 1)) (boundary R m) (boundary_comp_boundary R m)
+
+lemma proj_comp_boundaryFromCoker (m : ℕ) :
+    π (boundary R (m + 1)) ≫ boundaryFromCoker R m = boundary R m :=
+  rfl
 
 /-- The natural isomorphism from points with `0` witnesses to points of `V` that forgets the empty
 tuple of witnesses. -/
@@ -325,7 +329,7 @@ lemma map_cocycleClass (Φ : AbFunctor C ⥤ AbFunctor C') [IsExactFunctor Φ] (
         refine Finset.sum_congr rfl fun j _ ↦ ?_
         rw [Preadditive.zsmul_comp, Φ.map_zsmul, Preadditive.comp_zsmul, h_reindex]
       _ = q (m + 1) ≫ Φ.map (π _) ≫ Φ.map (boundaryFromCoker R m) := by
-        rw [← Φ.map_comp]; rfl
+        rw [← Φ.map_comp, proj_comp_boundaryFromCoker]
   let k (m : ℕ) : abCoker (boundary R' m) ⟶ Φ.obj (abCoker (boundary R m)) :=
     abCoker.desc (q m ≫ Φ.map (π _))
       (by simp [reassoc_of% h_bd, ← Φ.map_comp, shortExact_boundaryFromCoker.1])
@@ -578,7 +582,7 @@ end CechDescent
 
 section BijectiveEquivalence
 
-open CategoryTheory Limits cech fibreProd Fin
+open CategoryTheory Limits cech fiberProd Fin
 
 variable {C : Type _} [Category C] {Y E W V : C ⥤ Type 1} {p : E ⟶ Y} {u : W ⟶ Y} {q : V ⟶ W}
   {v : V ⟶ E}
@@ -616,8 +620,8 @@ lemma isPullback_iff :
 
 /-- The fibre product of `u : W ⟶ Y` and `p : E ⟶ Y` with its two projections is a pull-back
 square. -/
-lemma isPullback_fibreProd : IsPullback (snd u p) (fst u p) p u :=
-  isPullback_iff.mpr ⟨fun _ z ↦ z.2.symm, fun _ w x hx ↦
+lemma isPullback_fiberProd : IsPullback (snd u p) (fst u p) p u :=
+  isPullback_iff.mpr ⟨fun _ z ↦ z.property.symm, fun _ w x hx ↦
     ⟨⟨(w, x), hx.symm⟩, ⟨rfl, rfl⟩, fun _ ⟨h1, h2⟩ ↦ Subtype.ext (Prod.ext h1 h2)⟩⟩
 
 /-- The fibre power with `m + 2` factors is the pull-back of `p` along the fibre power with `m + 1`
@@ -646,7 +650,7 @@ end BijectiveEquivalence
 section BijectiveComparisons
 
 open CategoryTheory Abelian Function Functor Subfunctor Ext H IsCohomEquiv ConcreteCategory cech
-  Arrow BijectiveUpTo sigma IsPointwiseSurjective fibreProd Iso
+  Arrow BijectiveUpTo sigma IsPointwiseSurjective fiberProd Iso
 
 variable {C C' C'' : Type 1} [Category C] [Category C'] [Category C'']
   {F G N : AbFunctor C} {F' G' N' : AbFunctor C'} {F'' N'' : AbFunctor C''} {Y E : C ⥤ Type 1}
@@ -783,7 +787,7 @@ end BijectiveComparisons
 section ComparisonDescent
 
 open CategoryTheory Abelian Function Functor Subfunctor Ext H IsCohomEquiv ConcreteCategory cech
-  Arrow BijectiveUpTo sigma IsPointwiseSurjective fibreProd Iso
+  Arrow BijectiveUpTo sigma IsPointwiseSurjective fiberProd Iso
 
 variable {C C' : Type 1} [Category C] [Category C'] {F : AbFunctor C} {F' : AbFunctor C'}
   {Y E : C ⥤ Type 1} {Y' E' : C' ⥤ Type 1} {r : ℕ} {φ : C' ⥤ C} {c : Comparison F F'}
@@ -838,7 +842,7 @@ lemma bijectiveUpTo_of_cech_pred (w : p' ≫ u = v ≫ c.functor.whiskerLeft p) 
 `p' : E' ⟶ Y'`, be the pull-back of `u` along `t`. Suppose that for every point `x` of `E A` the
 comparison is bijective in all degrees along the projection to `c.functor ⋙ reprBy A` of the fibre
 product of `u` with the point `reprBy A ⟶ Y` given by `t x`. Then it is bijective along `v`. -/
-lemma isBijective_of_fibres (t : E ⟶ Y) (h_pb : IsPullback v p' (c.functor.whiskerLeft t) u)
+lemma isBijective_of_fibers (t : E ⟶ Y) (h_pb : IsPullback v p' (c.functor.whiskerLeft t) u)
     (h_fibre : ∀ (A : C) (x : E.obj A),
       c.IsBijective (freeAbMap (snd u (whiskerLeft c.functor (pointMap (t A x)))))) :
     c.IsBijective (freeAbMap v) := by
@@ -857,12 +861,12 @@ lemma isBijective_of_fibres (t : E ⟶ Y) (h_pb : IsPullback v p' (c.functor.whi
         exact h_fibre A x
       let i : c.functor ⋙ reprBy A ⟶ c.functor ⋙ E := whiskerLeft c.functor (pointMap x)
       have h_pasted : IsPullback (snd v i) (fst v i ≫ p') (i ≫ whiskerLeft c.functor t) u :=
-        isPullback_fibreProd.paste_vert h_pb
+        isPullback_fiberProd.paste_vert h_pb
       exact h_fibre_tx.precomp_of_bijective _
-        (h_pasted.isoIsPullback_hom_fst _ _ isPullback_fibreProd)
+        (h_pasted.isoIsPullback_hom_fst _ _ isPullback_fiberProd)
         fun B ↦ (Iso.app _ B).toEquiv.bijective
     let repr (x : E.Elements) : C ⥤ Type 1 := reprBy x.obj
-    let fib (x : E.Elements) : C' ⥤ Type 1 := fibreProd v (whiskerLeft _ (pointMap x.val))
+    let fib (x : E.Elements) : C' ⥤ Type 1 := fiberProd v (whiskerLeft _ (pointMap x.val))
     let q : sigma repr ⟶ E := desc fun x ↦ pointMap x.val
     let q' : sigma fib ⟶ E' := desc fun x ↦ fst v (whiskerLeft _ (pointMap x.val))
     have hq : IsPointwiseSurjective q := fun A y ↦ ⟨⟨⟨y⟩, ⟨𝟙 A⟩⟩, E.map_id_apply A y⟩
@@ -934,7 +938,7 @@ lemma HasUniversalPoints.isBijective_of_isPullback (h_points : c.HasUniversalPoi
     (p' : E' ⟶ Y') (t : E ⟶ Y) (h_pb : IsPullback v p' (c.functor.whiskerLeft t) u) :
     c.IsBijective (freeAbMap v) := by
   -- The fibre of `u` over `t y` is represented by the universal point `(x, f)`.
-  refine isBijective_of_fibres t h_pb fun A y ↦ ?_
+  refine isBijective_of_fibers t h_pb fun A y ↦ ?_
   obtain ⟨B, x, f, h_univ⟩ :
       ∃ (B : C') (x : Y'.obj B) (f : A ⟶ c.functor.obj B), c.IsUnivPoint u (t A y) x f :=
     h_points A (t A y)
@@ -964,8 +968,8 @@ lemma HasUniversalPoints.isBijective_subfunctor (h_points : c.HasUniversalPoints
     c.IsBijective (freeAbMap (Y := toFunctor U) ((U.whisker c.functor).fromPreimage u)) := by
   -- the map from the preimage of `U` to `U` is the base change of `u` along the inclusion
   refine h_points.isBijective_of_isPullback (Subfunctor.ι _) U.ι (isPullback_iff.mpr ?_)
-  exact ⟨fun _ _ ↦ rfl, fun B w x (hx : x.1 = u.app B w) ↦
-    ⟨⟨w, (hx ▸ x.2 : u.app B w ∈ U.obj (c.functor.obj B))⟩,
+  exact ⟨fun _ _ ↦ rfl, fun B w x (hx : x.val = u.app B w) ↦
+    ⟨⟨w, (hx ▸ x.property : u.app B w ∈ U.obj (c.functor.obj B))⟩,
       ⟨rfl, Subtype.ext hx.symm⟩, fun _ ⟨hz, _⟩ ↦ Subtype.ext hz⟩⟩
 
 /-- With universal points, a subfunctor `U` of `Y` has the cohomology of `Y` for `F` if and only

@@ -341,6 +341,14 @@ lemma weylGauge_firstFactor_le_one (i : ChoiceIndex j) (h : Gf D.E (FirstFactorI
     weylGauge (untwistedDescentPair j).colsPlus 0 h (firstFactor j ϑ i h) ≤ 1 :=
   (isIntegralAndSmall_firstFactor j ϑ i h).weylGauge_le_one l hl
 
+/-- Arithmetic of the first factors: for the trivial twist, every conjugate
+`σ ∘ firstFactor j 1 i h` of the values of `φ″_{1,i}` has squared norm (`weylNormSq`) at most
+`exp (D.f * D.m * D.b * D.logB ^ 2)`. -/
+lemma weylNormSq_firstFactor_le (i : ChoiceIndex j) (h : Gf D.E (FirstFactorIndex j))
+    (σ : ℂ ≃+* ℂ) :
+    weylNormSq (σ ∘ firstFactor j 1 i h) ≤ exp (D.f * D.m * D.b * D.logB ^ 2) :=
+  (isIntegralAndSmall_firstFactor j 1 i h).weylNormSq_le rfl σ
+
 /-! ### The gluing map and the slices of lifts -/
 
 /-- The gluing map `glue_ϑ`. For `ζ` in the copy `i` of the forms on `V°` it is `M ^ l₁` times the
@@ -613,6 +621,11 @@ lemma card_secondFactorIndex_le : card D.SecondFactorIndex ≤ D.t := by
   rw [Fintype.card_sum, Fintype.card_fin, D.card_rowIndex]
   grind [D.hundred_mul_m_add_nine_lt_k, D.r_add_one, D.t_eq_five_mul_r]
 
+variable (D) in
+private lemma card_secondFactorIndex_le_two_mul_n : card D.SecondFactorIndex ≤ 2 * D.n D.m := by
+  have ht : D.t ≤ 6 * D.r := by rw [D.t_eq_five_mul_r]; omega
+  exact (card_secondFactorIndex_le D).trans (ht.trans (D.six_mul_r_le_n.trans (by omega)))
+
 /-- The diagram `μ⁻` has few boxes: at each place it has at most `D.gap` columns of each height, and
 the heights are below the rank of `V°`, which is at most `t`. -/
 lemma sum_mul_colsMinus_le :
@@ -710,8 +723,7 @@ lemma M_pow_denominatorExponent_sq_mul_le_exp :
         grind [Fintype.card_fin, D.six_mul_r_le_n, D.hundred_mul_m_add_nine_lt_k, D.r_add_one])
     have h_second :
         Nat.card (StdClasses (principalLevel D.SecondFactorIndex (D.piM ^ 2))) ≤ exp D.b :=
-      card_stdClasses_le_exp_of_le le_rfl (by
-        grind [card_secondFactorIndex_le D, D.six_mul_r_le_n, D.t_eq_five_mul_r])
+      card_stdClasses_le_exp_of_le le_rfl (card_secondFactorIndex_le_two_mul_n D)
     nth_grw 1 [← h_flat]
     grw [← h_second]
     -- What is left counts the matrices, the two sets of classes and the selections of rows.
@@ -758,7 +770,7 @@ lemma weylNormSq_evalForm_productForm_le (ζ : FormTuples j) (σ : ℂ ≃+* ℂ
       cartanProduct V.ε 1 (σ ∘ firstFactor j 1 p.1 h) (σ ∘ ζ p) :=
     map_cartanProduct h_plus h_minus V.ε (firstFactor j 1 p.1 h) (ζ p) σ.toRingHom
   have h_first : weylNormSq (σ ∘ firstFactor j 1 p.1 h) ≤ exp (D.f * D.m * D.b * D.logB ^ 2) :=
-    (isIntegralAndSmall_firstFactor j 1 p.1 h).weylNormSq_le rfl σ
+    weylNormSq_firstFactor_le j p.1 h σ
   have h_second : weylNormSq (σ ∘ ζ p) ≤ formTupleNormSq σ ζ :=
     single_le_sum (fun q _ ↦ weylNormSq_nonneg (σ ∘ ζ q)) (mem_univ p)
   -- A form supported on one class costs the order of a stabiliser, and the norm of the product
@@ -921,7 +933,7 @@ lemma sum_slice_eq_zero_of_mem_falseLiftsAt {w : FinPlace D.E} {hw : star w ≠ 
   have h_small (h' : Gf D.E D.SecondFactorIndex) :
       classAut stdRatPoints (principalLevel D.SecondFactorIndex (D.piM ^ 2)) h' = ⊥ :=
     D.classAut_eq_bot_of_le_chosenLevel (D.principalLevel_le_chosenLevel ⟨_, sq _⟩)
-      (by grind [card_secondFactorIndex_le D, D.six_mul_r_le_n, D.t_eq_five_mul_r]) h'
+      (card_secondFactorIndex_le_two_mul_n D) h'
   -- The inner product with a form supported on one class is the pairing with the value there.
   simpa [↓h_small, classSum, ↓ finsum_eq_sum_of_fintype, DividedSplitting.productForm,
     inner_classForm] using! h_period

@@ -221,10 +221,14 @@ def TimesBNat.wangPow : freeAb.obj ((fst C ⋙ incl C ⋙ Y) ⊗ natWithShift) �
   freeAb.map ⟨fun D ↦ ↾fun x ↦ (shiftEnd Y x.2.down).asHom.app D.1 x.1,
     fun _ _ f ↦ by exact shiftEnd_naturality Y f⟩
 
+/-- The two maps of the Wang sequence compose to zero, as `γ^k (γ x) = γ^(k + 1) x`. -/
+lemma TimesBNat.wangSub_comp_wangPow : wangSub Y ≫ wangPow Y = 0 :=
+  (shortExact_induced Y).fst
+
 /-- The Wang sequence ℤ[Y × ℕ] → ℤ[Y × ℕ] → ℤ[Y] (`wangSub`, then `wangPow`), a short complex of
 functors from C × Bℕ to abelian groups. -/
 abbrev TimesBNat.wangComplex : ShortComplex (TimesBNat C ⥤ AddCommGrpCat.{1}) :=
-  .mk (wangSub Y) (wangPow Y) (shortExact_induced Y).fst
+  .mk (wangSub Y) (wangPow Y) (wangSub_comp_wangPow Y)
 
 /-- For Y on C × Bℕ with endomorphism γ, the Wang sequence 0 → ℤ[Y × ℕ] → ℤ[Y × ℕ] → ℤ[Y] → 0 is
 short exact (`wangComplex`): the first map is `(x, k) ↦ (γ x, k) - (x, k + 1)`, the second
@@ -389,12 +393,12 @@ def compatibleRoots.atOne : compatibleRoots ⟶ TimesBNat.fst (CommAlg OC) ⋙ u
 variable {C : Type 1} [Category C] (F : AbFunctor C) (ψ : C ⥤ CommAlg OC)
 
 /-- Let ψ be a functor from C to O_C-algebras and y a point of ψ(A). This is the functor on C × Bℕ,
-the fibre product (`fibreProd`) of `compatibleRoots.atOne` along ψ with the point `pointMap y`,
+the fibre product (`fiberProd`) of `compatibleRoots.atOne` along ψ with the point `pointMap y`,
 sending B to the pairs of a character w : ℚ≥0 → ψ(B) and a map f : A → B with w(1) = ψ(f)(y). Such a
 w is a system of roots of the image of y. -/
 abbrev compatibleRootsAt {A : C} (y : (ψ ⋙ underlyingSet).obj A) :
     C × SingleObj (Multiplicative ℕ) ⥤ Type 1 :=
-  fibreProd ((ψ.prod (𝟭 (SingleObj (Multiplicative ℕ)))).whiskerLeft compatibleRoots.atOne)
+  fiberProd ((ψ.prod (𝟭 (SingleObj (Multiplicative ℕ)))).whiskerLeft compatibleRoots.atOne)
     ((TimesBNat.fst C).whiskerLeft (pointMap (Y := ψ ⋙ underlyingSet) (A := A) y))
 
 /-- For every object A and unit y of ψ(A), the root systems of y (`New.Variety.compatibleRootsAt`)
@@ -402,7 +406,7 @@ form a line over Hom(A, −). That is, the projection to Hom(A, −) is bijectiv
 coefficients F. -/
 abbrev CompatibleRootsAreLines : Prop :=
   ∀ (A : C) (y : (ψ ⋙ underlyingSet) A), IsUnit y.down →
-    IsLine F (Y := compatibleRootsAt ψ y) (fibreProd.snd ..)
+    IsLine F (Y := compatibleRootsAt ψ y) (fiberProd.snd ..)
 
 end RootSystems
 
@@ -767,7 +771,7 @@ lemma PadicTest.isLine_compatibleRoots
     HasFlatBaseChange (freeAb (TimesBNat.incl PadicTest ⋙ compatibleRootsAt algFunctor v)) ∧
     -- (b) they form a line
     IsLine (tilt ⋙ moduleCoeff (tensorCoeff M)) (Y := compatibleRootsAt algFunctor v)
-      (fibreProd.snd ..) := by
+      (fiberProd.snd ..) := by
   -- The functor of root systems of `v` is `Hom(periodicSeq c.TiltRing, (-)^♭)`: choose one system
   -- `r`; the periodic sequences `x n` lifting `k ↦ (ζ ^ k * r) n` along the untilt give the
   -- universal system. As `periodicSeq c.TiltRing` is perfect, both claims follow, `shift` acting as
@@ -791,8 +795,8 @@ lemma PadicTest.isLine_compatibleRoots
       map_mul' a b := by
         have h_x_mul (k : ℕ) :
             ((x (a * b)).val k).untilt = 1 * ((x a * x b).val k).untilt := by
-          rw [one_mul, Subalgebra.coe_mul, Pi.mul_apply, map_mul, hx, hx, hx, map_mul, map_mul, mul_pow,
-            mul_mul_mul_comm]
+          rw [one_mul, Subalgebra.coe_mul, Pi.mul_apply, map_mul, hx, hx, hx, map_mul, map_mul,
+            mul_pow, mul_mul_mul_comm]
         simpa using untilt_map_eq_mul_of_forall ϕ 1 (x (a * b)) (x a * x b) h_x_mul }
   have h_sys_one {D : PadicTest} (ϕ : Hom D) : sys ϕ (ofAdd 1) = (baseOfHom ϕ).1 (r (ofAdd 1)) := by
     -- `ζ 1 = 1`, so the sequence `x 1` lifts the constant `r 1`
