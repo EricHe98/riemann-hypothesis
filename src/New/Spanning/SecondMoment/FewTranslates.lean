@@ -404,10 +404,12 @@ variable {Θ V W : Type} [AddCommGroup V] [Module ℂ V] [Module.Finite ℂ V]
 /-- The image of `A` adds `dim V - dim A⁻¹ F` dimensions to `F`. -/
 lemma finrank_sup_range_add_finrank_comap (A : V →ₗ[ℂ] W) (F : Submodule ℂ W) :
     finrank ℂ ↥(F ⊔ range A) + finrank ℂ (F.comap A) = finrank ℂ F + finrank ℂ V := by
-  have h_comap := A.rank_comap F
-  simp only [← Module.finrank_eq_rank, ← Nat.cast_add, Nat.cast_inj] at h_comap
-  rw [inf_comm] at h_comap
-  linarith [finrank_sup_add_finrank_inf_eq F (range A), A.finrank_range_add_finrank_ker]
+  have h_comap : finrank ℂ ↥(F ⊓ range A) + finrank ℂ (ker A) = finrank ℂ (F.comap A) := by
+    rw [← (A.domRestrict (F.comap A)).finrank_range_add_finrank_ker, range_domRestrict,
+      map_comap_eq, inf_comm, ker_domRestrict,
+      (comapSubtypeEquivOfLe (ker_le_comap A : ker A ≤ F.comap A)).finrank_eq]
+  have h_sup := finrank_sup_add_finrank_inf_eq F (range A)
+  linarith [A.finrank_range_add_finrank_ker]
 
 variable {B : Θ → V →ₗ[ℂ] W} {ε : ℝ}
 
@@ -538,12 +540,16 @@ theorem IsSpread.exists_few_le_finrank_iSup_range [Nontrivial V] (h_spread : IsS
 /-- The images of a subspace `C` under `#t` maps span at most `#t dim C` dimensions. -/
 lemma finrank_biSup_map_le (B : Θ → V →ₗ[ℂ] W) (t : Finset Θ) (C : Submodule ℂ V) :
     finrank ℂ ↥(⨆ s ∈ t, C.map (B s)) ≤ #t * finrank ℂ C := by
-  rw [← t.sup_eq_iSup]
-  calc
-    _ ≤ ∑ s ∈ t, finrank ℂ (C.map (B s)) :=
-      t.apply_sup_le_sum (f := fun U : Submodule ℂ W ↦ finrank ℂ U) (by simp)
-        (fun {_ _} ↦ finrank_add_le_finrank_add_finrank _ _)
-    _ ≤ _ := t.sum_le_card_nsmul _ _ fun s _ ↦ finrank_map_le (B s) C
+  classical
+  induction t using Finset.induction with
+  | empty => simp
+  | insert s t hs ih =>
+    rw [t.iSup_insert, card_insert_of_notMem hs]
+    calc finrank ℂ ↥(C.map (B s) ⊔ ⨆ s ∈ t, C.map (B s))
+        ≤ finrank ℂ (C.map (B s)) + finrank ℂ ↥(⨆ s ∈ t, C.map (B s)) :=
+          finrank_add_le_finrank_add_finrank _ _
+      _ ≤ finrank ℂ C + #t * finrank ℂ C := add_le_add (finrank_map_le (B s) C) ih
+      _ = (#t + 1) * finrank ℂ C := by ring
 
 /-- Restricting finitely many maps to a subspace `U` lowers the dimension of the span of their
 images by at most the codimension of `U` for each map. -/
