@@ -463,6 +463,20 @@ lemma New.Selmer.CrystallineSizes.hasCupExponent_of_cube_le {ℓ : ℕ} [ThePrim
   exact h_exp.mono (by nlinarith only [Nat.mul_le_mul_left K (Nat.succ_le_of_lt h_log),
     Nat.mul_le_mul_right (ℓ.log (2 * (b + δ + (W + 4 * η)))) hK_pos, hK_pos])
 
+/-- The gap condition for small loss. Under the size conditions `h_sizes`, let `2 b < ℓ (v + 1)`
+with `v < h³`, and let `ℓ` divide no integer in `(b - 5 h³, b + 5 h³]`. Then `ℓ` divides no
+nonzero integer within `2 (2 (v + 1) + η + W)` of `0` or `± a`, for `a = b + δ` and `a = G + δ`. -/
+lemma New.Selmer.CrystallineSizes.noMultipleNear {ℓ Q m h G b δ η W v a : ℕ}
+    (h_sizes : CrystallineSizes Q m h G b δ η W) (h_loss : 2 * b < ℓ * (v + 1)) (hv : v < h ^ 3)
+    (h_not : ∀ u ∈ Ioc (b - 5 * h ^ 3) (b + 5 * h ^ 3), ¬ℓ ∣ u) (ha : a = b + δ ∨ a = G + δ) :
+    NoMultipleNear ℓ (2 * (2 * (v + 1) + η + W)) a := by
+  have ⟨_, (hQ : 99 * (Q * Q + (W + 1) * Q + Q + W + m) ≤ h), (hG : 99 * h ^ 3 ≤ G),
+    (hb : 99 * (G * h ^ 3 + G) ≤ b), _, (hδ : δ < η),
+    (hη : 99 * ((η + W) * Q + η + h) ≤ h ^ 3)⟩ := h_sizes
+  have h_large : 9 * G ≤ ℓ := by nlinarith only [h_loss, hv, hb]
+  have h_lt : G + δ + 2 * (2 * (v + 1) + η + W) < ℓ := by omega
+  exact noMultipleNear_of_forall_not_dvd h_lt (by omega) h_not ha
+
 /-- Let `Γ → G_ℓ` be an open embedding, `ℓ ≥ 7`, and `O` the ring of integers of a finite Galois
 extension of `ℚ_ℓ`. The hypothesis `h_sizes` is the list of inequalities `Q² ≪ h`, `m ≪ h`,
 `W Q ≪ h`, `h³ ≪ G`, `h³ G ≪ b`, `Q η ≪ h³`, `2 log (4 b) < m` and `δ < η`. `InClass ⊤ ⊥ U` is the
@@ -624,12 +638,10 @@ lemma New.Selmer.normLength_dualDefect_le_of_crystallineSizes {ℓ : ℕ} [hp : 
   · exact normLength_dualDefect_le_of_hasCupExponent hL.isPotentiallyCrystalline (h_exp le_rfl)
       (h_sizes.hasCupExponent_of_cube_le h_un h_seven (not_le.1 hℓ) ζ h_open hL h_winU h_winU'
         h_loss hv hK)
-  -- When the loss is below the cube, the far window fits in the exceptional interval.
-  have h_large : 9 * G ≤ ℓ := by nlinarith only [h_loss, not_le.1 hv, hb]
   have h_gap (z : ℂ_[ℓ]) :
       NoMultipleNear ℓ (2 * (2 * (v + 1) + η + W)) (if T z then b + δ else G + δ : ℕ) :=
-    noMultipleNear_of_forall_not_dvd (c := 5 * h ^ 3) (by omega) (by omega)
-      (fun u hu h_dvd ↦ hv (h_cube hu h_dvd)) (ite_eq_or_eq (T z) (b + δ) (G + δ))
+    h_sizes.noMultipleNear h_loss (not_le.1 hv) (fun u hu h_dvd ↦ hv (h_cube hu h_dvd))
+      (ite_eq_or_eq (T z) (b + δ) (G + δ))
   have h_index : k.f = Γ.overGp.toGp.range.index := by
     obtain ⟨-, he_one : k.e = 1, -⟩ := h_un
     rw [← h_chart.e_mul_f_eq_index, he_one, one_mul]
