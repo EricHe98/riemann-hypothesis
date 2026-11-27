@@ -31,6 +31,7 @@ X_j, Y_j and W_j.
   `l ≠ 0`, `χ ^ q₂ = 1`.
 
 Notions from other files:
+* `New.BlockIndex` and `New.blockNumber` are defined in `Lib.General.Groups.BesselGroups`.
 * `New.Data`: the data D, with m lifts, block size t and ranks k, n_j = k + j (t + 1) and
   r = k + m − 1; s is its parameter `D.towerExp`, and q₂ = q₂(s) the integer `New.Parameters.q₂`.
 * `New.Data.ChosenPlace`: the chosen places above the level prime p_i (i = 0, 1), the finite places

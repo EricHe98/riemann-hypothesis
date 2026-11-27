@@ -5,7 +5,7 @@ public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Lib.General.Groups.CongruenceSubgroups
 
 /-!
-# Block triangular groups, unipotent Bessel groups, Levi and parahoric subgroups
+# Block indices, block triangular groups, unipotent Bessel groups, Levi and parahoric subgroups
 
 This file treats matrix groups over a commutative ring `R`, with an involution where unitary groups
 are concerned. The space has the basis `e₁, …, e_ϱ`, then a middle block, then `e*₁, …, e*_ϱ`; the
@@ -16,6 +16,8 @@ more vector `z`.
 The file also defines the Kronecker product of a finite family of matrices and the character
 `New.wave` of `ℂ`.
 
+* `New.BlockIndex` indexes an initial block followed by copies of a second block.
+  `New.blockNumber` gives the block containing an index.
 * `New.BesselIndex.level`, `New.Shape.besselFrame`, `New.Shape.Form.frameGram`: the levels of the
   basis vectors, the frame `(e₁, …, e_ϱ, z)`, and the products of the frame with its image under
   a matrix `γ`.
@@ -88,7 +90,7 @@ def wave (c : ℂ) : ℂ := Complex.exp (c - starRingEnd ℂ c)
 @[simp]
 lemma norm_wave (c : ℂ) : ‖wave c‖ = 1 := by simp [wave, Complex.norm_exp]
 
-/-! ### The basis, its levels, the form and the frame -/
+/-! ### Block index types -/
 
 section
 
@@ -120,6 +122,8 @@ def blockNumber {R T : Type} : ∀ j : ℕ, BlockIndex R T j → Fin (j + 1)
   | j + 1 => castSucc ∘ blockNumber j ⊕ᵥ fun _ ↦ last (j + 1)
 
 end
+
+/-! ### The basis, its levels, the form and the frame -/
 
 /-- The index set made of ϱ indices, a middle set μ, and ϱ further indices, as a disjoint union. -/
 abbrev SplitIndex (ϱ : ℕ) (μ : Type) : Type := Fin ϱ ⊕ μ ⊕ Fin ϱ
