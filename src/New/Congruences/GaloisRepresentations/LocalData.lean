@@ -14,8 +14,13 @@ Fix admissible data `D` with CM field `D.E`. Its cyclotomic embedding specifies 
 Galois group on which the inverse avatar of a tame character and the representations below act.
 `New.Selmer.badPlaces` records the places above the residual characteristic and the level.
 
-* `New.Selmer.IsConjSelfDual` specifies continuity, trace nondegeneracy and conjugate self-duality.
-* `New.Selmer.IsConjSelfDualOfLevel` also prescribes the jumps and ramification at the finite places.
+## Main definitions and results
+
+* `New.Selmer.IsConjSelfDual`: `R` is continuous, has a non-degenerate trace form on the span of
+  its image, and is conjugate self-dual up to a twist.
+* `New.Selmer.IsConjSelfDualOfLevel`: moreover `R` has given jumps and is of finite type at the
+  places off a set `S` and at those above `ℓ p₀ p₁`, and has good reduction at those of them prime
+  to `p₀ p₁`.
 -/
 
 @[expose] public section

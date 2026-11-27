@@ -20,22 +20,16 @@ import Lib.General.NumberTheory.FrobeniusOrbits
 # Bad places, ℓ-adic avatars and hypotheses on conjugate self-dual representations
 
 Fix data `D`, a prime `ℓ` and a descent pair `O` (`New.DescentPair`) with chosen places
-`O.chosenPlace`. This file uses the bad places from `LocalData` and studies the `ℓ`-adic avatars of characters of
-`U(1)`. It states the hypotheses on conjugate self-dual `ℓ`-adic representations `R` of the
-absolute Galois group of the CM field `D.E` under which Selmer groups are bounded: conjugate
-self-dual representations of given level, main summands and representations of a type. It also
-defines lift settings and the idempotents of tuples of types acting on forms. The two primes
-`p₀`, `p₁` of the data are `D.levelPrime 0` and `D.levelPrime 1`.
+`O.chosenPlace`. This file studies the `ℓ`-adic avatars of characters of `U(1)`. It states
+hypotheses on conjugate self-dual `ℓ`-adic representations of the absolute Galois group of `D.E`
+under which Selmer groups are bounded. These include conditions on the level, the main summands
+and the type. The file also defines lift settings and the idempotents of tuples of types acting on
+forms. The two primes `p₀`, `p₁` of the data are `D.levelPrime 0` and `D.levelPrime 1`.
 
 ## Main definitions and results
 
-The local hypotheses come from New.Congruences.GaloisRepresentations.LocalData.
+The local hypotheses come from `New.Congruences.GaloisRepresentations.LocalData`.
 
-* `New.Selmer.IsConjSelfDual`: `R` is continuous, has a non-degenerate trace form on the span of its
-  image, and is conjugate self-dual up to a twist.
-* `New.Selmer.IsConjSelfDualOfLevel`: moreover `R` has given jumps and is of finite type at the
-  places off a set `S` and at those above `ℓ p₀ p₁`, and has good reduction at those of them prime
-  to `p₀ p₁`.
 * `New.Selmer.IsMainSummandLike`: the case `S = ∅`, with conditions on the jumps, the ramification
   above `p₀ p₁` and the size of the image.
 * `New.Selmer.IsLiftSetting`, `New.Selmer.typeProjection`: descent pairs with type polynomials
